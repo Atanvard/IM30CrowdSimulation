@@ -1,0 +1,19 @@
+ManifestFileVersion: 0
+CRC: 1570216704
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: eb69896f7987d73e3f39aca2f53b9f89
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 5ad585dd02dfb5016c0dad519eab8f49
+HashAppended: 0
+ClassTypes:
+- Class: 49
+  Script: {instanceID: 0}
+Assets:
+- Assets/AnimationTexture/instance.bytes
+- "Assets/AnimationTexture/\u5927\u5175\u5C04\u51FB\u5FAA\u73AF-ok (1).bytes"
+- Assets/AnimationTexture/ShieldSoliderInstance.bytes
+- Assets/AnimationTexture/instance2.bytes
+Dependencies: []
