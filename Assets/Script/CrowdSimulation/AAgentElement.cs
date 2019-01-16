@@ -107,6 +107,7 @@ public class AAgentElement : MonoBehaviour {
         {
             m_collider.isTrigger = false;
             m_rigidbody.isKinematic = false;
+            m_rigidbody.mass = 100;
             m_rigidbody.AddExplosionForce(aController.exploseForce, aController.transform.position - new Vector3(0, 30f, 0), aController.exploseRadius);
         }
         //SetPuppetPinWeight(0);
