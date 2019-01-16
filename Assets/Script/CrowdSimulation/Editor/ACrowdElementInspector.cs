@@ -17,11 +17,11 @@ public class ACrowdElementInspector : Editor {
         EditorGUILayout.LabelField("Own agent number", currentTarget.ownAgentNum.ToString());
         if (!currentTarget.GetComponentInChildren<PuppetMaster>())
         {
-            EditorGUILayout.LabelField("High Quality Agent");
+            EditorGUILayout.LabelField("High Quantity Agent");
         }
         else
         {
-            EditorGUILayout.LabelField("High Number Agent");
+            EditorGUILayout.LabelField("High Quality Agent");
         }
         EditorGUILayout.Separator();
         EditorGUILayout.Separator();

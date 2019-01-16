@@ -62,7 +62,7 @@ namespace FormationSetup
         void OnGUI()
         {
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
-            GUILayout.Label("方阵添加", EditorStyles.boldLabel);
+            GUILayout.Label("方阵配置", EditorStyles.boldLabel);
             
             //create formation select field
             createFormationSelect();
@@ -109,10 +109,7 @@ namespace FormationSetup
         /// </summary>
         private void createFormationSelect()
         {
-
             formationSelect = (FormationType)EditorGUILayout.Popup("方阵类型", (int)formationSelect, options); 
-            
-
         }
         
         /// <summary>
@@ -121,26 +118,22 @@ namespace FormationSetup
         private void createSoldierListField()
         {
             GUILayout.BeginHorizontal();
-            //方阵数量
             GUILayout.Label("方阵数量");
             
-            if (GUILayout.Button("+", GUILayout.Width(60)))
+            if (GUILayout.Button("-", GUILayout.Width(30)))
             {
-                ++soldierListCount;
-                
+                --soldierListCount;
+                soldierListCount = Math.Max(0, soldierListCount);
             };
             
             GUILayout.TextArea(soldierListCount.ToString(), GUILayout.Width(60));
             
-            if (GUILayout.Button("-", GUILayout.Width(60)))
+            if (GUILayout.Button("+", GUILayout.Width(30)))
             {
-                --soldierListCount;
-                soldierListCount = Math.Max(0, soldierListCount);
+                ++soldierListCount;
             }
             
             GUILayout.EndHorizontal();;
-            
-
         }
         
         /// <summary>
