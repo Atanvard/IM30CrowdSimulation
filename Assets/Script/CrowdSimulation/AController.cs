@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-public enum ControllerType { Range, Attach, TempleteExplose };
+public enum ControllerType { Range, Attach, TempleteExplose, TempleteColider };
 [RequireComponent(typeof(Rigidbody),typeof(Collider))]
 public class AController : MonoBehaviour {
     public ControllerType controllerType;
@@ -31,12 +31,23 @@ public class AController : MonoBehaviour {
     public float newVelocityScale = 1f;
     private Rigidbody m_rigidbody;
     private Color m_gizmoColor = Color.white;
+    private Collider m_colider;
 	// Use this for initialization
 	void Start () {
+        m_colider = GetComponent<Collider>();
         m_rigidbody = GetComponent<Rigidbody>();
+
         m_rigidbody.isKinematic = true;
 
         m_rigidbody.Sleep();
+        if (controllerType == ControllerType.TempleteColider)
+        {
+            GameObject child = new GameObject();
+            child.AddComponent<BoxCollider>();
+            child.transform.parent = this.transform;
+            child.transform.localPosition = Vector3.zero;
+            child.transform.localScale = Vector3.one;
+        }
     }
     private void OnDrawGizmos()
     {
@@ -67,6 +78,9 @@ public class AController : MonoBehaviour {
         }else if(controllerType == ControllerType.TempleteExplose)
         {
             Invoke("DisableController", durationTime);
+            ChangeGizmoColor(Color.black);
+        }else if(controllerType == ControllerType.TempleteColider)
+        {
             ChangeGizmoColor(Color.black);
         }
     }

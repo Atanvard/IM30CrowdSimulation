@@ -38,6 +38,10 @@ public class AControllerInspector : Editor
             //currentTarget.exploseRadius =  EditorGUILayout.FloatField("Explose radius", currentTarget.exploseRadius);
             currentTarget.durationTime = EditorGUILayout.Slider("During time(sec)", currentTarget.durationTime, 0, 100);
         }
+        else if(currentTarget.controllerType == ControllerType.TempleteColider)
+        {
+            currentTarget.bKill = EditorGUILayout.ToggleLeft("Whether kill agent", currentTarget.bKill);
+        }
         //base.DrawDefaultInspector();
     }
 }

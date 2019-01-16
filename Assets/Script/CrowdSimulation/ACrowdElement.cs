@@ -88,7 +88,6 @@ public class ACrowdElement : MonoBehaviour
                 Debug.Log(totalNum);
                 for (int i = 0; i < totalNum; i++)
                 {
-                    Debug.Log(m_liveAgentList[i].gameObject.name);
                     m_liveAgentList[i].ChangeStateImmediate(AgentState.Move);
                     //m_liveAgentList[i].SetAnimationClip("Move");
                     m_liveAgentList[i].SetNavDestination(tmpDes[i]);

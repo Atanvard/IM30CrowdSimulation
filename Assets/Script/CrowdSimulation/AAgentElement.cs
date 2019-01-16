@@ -59,7 +59,6 @@ public class AAgentElement : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-
         if (other.gameObject.layer == LayerMask.NameToLayer("physicalController"))
         {
             AController tmp = other.GetComponent<AController>();
@@ -82,6 +81,13 @@ public class AAgentElement : MonoBehaviour {
                     DoControllerExplose(tmp);
                 }
                 tmp.Reponse(m_crowdElement,this);
+                ChangeStateImmediate(tmp.nextCrowdState);
+            }
+            else if (tmp.controllerType == ControllerType.TempleteColider)
+            {
+                RemoveCollider();
+                RemoveNavMeshAgent();  //TODO: not use remove
+                SetPuppetPinWeight(0);
                 ChangeStateImmediate(tmp.nextCrowdState);
             }
         }
