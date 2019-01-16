@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using RootMotion.Dynamics;
 
 [CustomEditor(typeof(ACrowdElement))]
 public class ACrowdElementInspector : Editor {
@@ -14,6 +15,14 @@ public class ACrowdElementInspector : Editor {
 
         GUI.skin.label.fontSize = 12;
         EditorGUILayout.LabelField("Own agent number", currentTarget.ownAgentNum.ToString());
+        if (!currentTarget.GetComponentInChildren<PuppetMaster>())
+        {
+            EditorGUILayout.LabelField("High Quality Agent");
+        }
+        else
+        {
+            EditorGUILayout.LabelField("High Number Agent");
+        }
         EditorGUILayout.Separator();
         EditorGUILayout.Separator();
 

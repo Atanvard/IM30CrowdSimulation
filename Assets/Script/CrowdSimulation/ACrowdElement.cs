@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using RootMotion.Dynamics;
 public class ACrowdElement : MonoBehaviour
 {
     private AAgentElement[] m_ownAgents;
     private List<Vector3> m_currentTargetPositionList;
     private List<AAgentElement> m_liveAgentList;
+
+    public bool bAnimator = false;
     public int ownAgentNum
     {
         get
@@ -28,6 +31,10 @@ public class ACrowdElement : MonoBehaviour
         m_ownAgents = GetComponentsInChildren<AAgentElement>();
         m_currentTargetPositionList = new List<Vector3>();
         m_liveAgentList = new List<AAgentElement>(m_ownAgents);
+        if (GetComponentInChildren<PuppetMaster>())
+        {
+            bAnimator = true;
+        }
         //Initialization();
 	}
     void Initialization()
@@ -78,10 +85,12 @@ public class ACrowdElement : MonoBehaviour
                 {
                     Debug.Log("waiting subThread");
                 }
-
+                Debug.Log(totalNum);
                 for (int i = 0; i < totalNum; i++)
                 {
-                    m_liveAgentList[i].SetAnimationClip("Move");
+                    Debug.Log(m_liveAgentList[i].gameObject.name);
+                    m_liveAgentList[i].ChangeStateImmediate(AgentState.Move);
+                    //m_liveAgentList[i].SetAnimationClip("Move");
                     m_liveAgentList[i].SetNavDestination(tmpDes[i]);
                     if (bRandomSpeed)
                         m_liveAgentList[i].SetNavMeshAgentSpeed(UnityEngine.Random.Range(minRandomSpeed, maxRandomSpeed));
@@ -98,7 +107,8 @@ public class ACrowdElement : MonoBehaviour
         Debug.Log(totalNum);
         for (int i = 0; i < totalNum; i++)
         {
-            m_liveAgentList[i].SetAnimationClip("Move");
+            m_liveAgentList[i].ChangeStateImmediate(AgentState.Move);
+            //m_liveAgentList[i].SetAnimationClip("Move");
             m_liveAgentList[i].SetNavDestination(p);
             if (bRandomSpeed)
                 m_liveAgentList[i].SetNavMeshAgentSpeed(UnityEngine.Random.Range(minRandomSpeed, maxRandomSpeed));

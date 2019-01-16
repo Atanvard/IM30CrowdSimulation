@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEditor;
-
+using RootMotion.Dynamics;
 public enum AgentState { Idle, Move, Attack, Dead };
 public class AAgentElement : MonoBehaviour {
     public float agentNavSpeed {
@@ -27,6 +27,8 @@ public class AAgentElement : MonoBehaviour {
     private ACrowdElement m_crowdElement;
     private Rigidbody m_rigidbody;
     private Collider m_collider;
+    private Animator m_animator;
+    private PuppetMaster m_puppetMaster;
 
     [DrawGizmo(GizmoType.NonSelected | GizmoType.Active)]
     void OnDrawGizmos()
@@ -40,8 +42,10 @@ public class AAgentElement : MonoBehaviour {
         m_animationInstancing = this.GetComponent<AnimationInstancing.AnimationInstancing>();
         m_crowdElement = this.GetComponentInParent<ACrowdElement>();
         m_collider = this.GetComponent<Collider>();
+        m_animator = this.GetComponentInChildren<Animator>();
+        m_puppetMaster = this.GetComponentInChildren<PuppetMaster>();
         Invoke("Init",0.1f);
-        InvokeRepeating("SetAnimationSpeed", 1f, 1f);
+        InvokeRepeating("SetAnimationSpeed", 0f, 0.3f);
     }
 
 	void Init()
@@ -49,10 +53,13 @@ public class AAgentElement : MonoBehaviour {
         //TODO : Using configuration file
         m_navMeshAgent.stoppingDistance = m_crowdElement.navStopDistance;
         SetAnimationClip("Idle");
+
+        //m_animator.CrossFade("Move", 0.1f);
     }
 
     void OnTriggerEnter(Collider other)
     {
+
         if (other.gameObject.layer == LayerMask.NameToLayer("physicalController"))
         {
             AController tmp = other.GetComponent<AController>();
@@ -83,7 +90,16 @@ public class AAgentElement : MonoBehaviour {
     void SetAnimationSpeed()
     {
         if (m_navMeshAgent && currentAgentState == AgentState.Move)
-            m_animationInstancing.playSpeed = m_navMeshAgent.velocity.magnitude * m_crowdElement.animationScale;
+        {
+            if (m_crowdElement.bAnimator)
+            {
+                m_animator.speed = m_navMeshAgent.velocity.magnitude * m_crowdElement.animationScale;
+            }
+            else
+            {
+                m_animationInstancing.playSpeed = m_navMeshAgent.velocity.magnitude * m_crowdElement.animationScale;
+            }
+        }
     }
     void DoControllerExplose(AController aController)
     {
@@ -93,6 +109,8 @@ public class AAgentElement : MonoBehaviour {
             m_rigidbody.isKinematic = false;
             m_rigidbody.AddExplosionForce(aController.exploseForce, aController.transform.position - new Vector3(0, 30f, 0), aController.exploseRadius);
         }
+        //SetPuppetPinWeight(0);
+        Invoke("SetPuppetDead",1f);
     }
     void PerformanceOptimization()
     {
@@ -102,13 +120,47 @@ public class AAgentElement : MonoBehaviour {
 
         }
     }
+    void SetAnimationClip(string s)
+    {
+        if (m_crowdElement.bAnimator)
+        {
+            m_animator.speed = 1;
+            m_animator.CrossFade(s, 0.1f);
+        }
+        else
+        {
+            m_animationInstancing.playSpeed = 1f;
+            m_animationInstancing.PlayAnimation(s);
+        }
+    }
+    void SetPuppetPinWeight(float t)
+    {
+        if (m_puppetMaster)
+        {
+            m_puppetMaster.pinWeight = t;
+        }
+    }
+    void SetPuppetDead()
+    {
+        if (m_puppetMaster)
+        {
+            m_puppetMaster.state = PuppetMaster.State.Dead;
+        }
+        if (m_rigidbody)
+        {
+            Destroy(m_rigidbody);
+        }
+    }
     public void SetNavDestination(Vector3 tar)
     {
-        NavMeshPath path = new NavMeshPath();
-        if(m_navMeshAgent.CalculatePath(tar, path))
-            m_navMeshAgent.SetPath(path);
-        m_navMeshAgent.destination = tar;
-        agentNavDestination = tar;
+        if (m_navMeshAgent)
+        {
+            NavMeshPath path = new NavMeshPath();
+            if (m_navMeshAgent.CalculatePath(tar, path))
+                m_navMeshAgent.SetPath(path);
+            m_navMeshAgent.destination = tar;
+            agentNavDestination = tar;
+        }
     }
     public void SetNavMeshAgentActive(bool t)
     {
@@ -159,14 +211,10 @@ public class AAgentElement : MonoBehaviour {
                 break;
         }
     }
-    public void SetAnimationClip(string s)
-    {
-        m_animationInstancing.playSpeed = 1f;
-        m_animationInstancing.PlayAnimation(s);
-    }
     public void SetNavMeshAgentSpeed(float t)
     { 
-        m_navMeshAgent.speed = t;
+        if(m_navMeshAgent)
+            m_navMeshAgent.speed = t;
     }
     public void SetNavMeshAgentVelocity(float t)
     {
@@ -174,7 +222,8 @@ public class AAgentElement : MonoBehaviour {
         {
             return;
         }
-        m_navMeshAgent.velocity = t * m_navMeshAgent.velocity;
+        if(m_navMeshAgent)
+            m_navMeshAgent.velocity = t * m_navMeshAgent.velocity;
 
     }
     public void DoRangeOperation(AgentState agentState, float delayTime, float speed, bool kill) {
@@ -187,6 +236,7 @@ public class AAgentElement : MonoBehaviour {
         ChangeStateImmediate(agentState);
         if(kill)
         {
+            SetPuppetDead();
             RemoveNavMeshAgent();
             RemoveCollider();
         }

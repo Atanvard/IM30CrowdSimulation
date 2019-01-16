@@ -50,9 +50,8 @@ public class APath : MonoBehaviour {
                 foreach(var crowd in affectCrowdElement)
                 {
                     crowd.SetNewCrowdDestination(ownPathInfoList[m_activedpathCount].position);
-                    //Debug.Log(ownPathInfoList[m_activedpathCount].position[0]);
-                    ++m_activedpathCount;
                 }
+                ++m_activedpathCount;
             }
         }
 	}
