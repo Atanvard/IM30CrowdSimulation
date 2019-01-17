@@ -34,11 +34,11 @@ public class AControllerInspector : Editor
             currentTarget.affectPercent = EditorGUILayout.Slider("Affect crowd percent", currentTarget.affectPercent, 0, 100);
             currentTarget.delayTime =  EditorGUILayout.Slider("Delay start time(sec)", currentTarget.delayTime, 0, 10);
             currentTarget.durationTime =  EditorGUILayout.Slider("During time(sec)", currentTarget.durationTime, 0, 300);
-            currentTarget.newVelocityScale = EditorGUILayout.FloatField("New velocity scale", currentTarget.newVelocityScale);
+            currentTarget.newSpeed = EditorGUILayout.FloatField("New speed", currentTarget.newSpeed);
         }
         else if(currentTarget.controllerType == ControllerType.Attach)
         {
-            currentTarget.newVelocityScale = EditorGUILayout.FloatField("New velocity scale", currentTarget.newVelocityScale);
+            currentTarget.newSpeed = EditorGUILayout.FloatField("New velocity scale", currentTarget.newSpeed);
             currentTarget.durationTime = EditorGUILayout.Slider("During time(sec)", currentTarget.durationTime, 0, 300);
         }
         else if(currentTarget.controllerType == ControllerType.TempleteExplose)

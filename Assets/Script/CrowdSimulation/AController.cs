@@ -27,9 +27,9 @@ public class AController : MonoBehaviour {
         }
     }
     /// <summary>
-    /// speed after attach,if newVelocityScale.x = -1 means use origin speed.
+    /// speed after attach,if newSpeed.x = -1 means use origin speed.
     /// </summary>
-    public float newVelocityScale = 1f;
+    public float newSpeed = 1f;
     private Rigidbody m_rigidbody;
     private Color m_gizmoColor = Color.white;
     private Collider m_colider;
@@ -72,11 +72,11 @@ public class AController : MonoBehaviour {
     {
         ChangeGizmoColor(Color.black);
         if (controllerType == ControllerType.Range) { 
-            crowdElement.DoRangeOperation(agentElement, affectPercent / 100, delayTime, durationTime, nextCrowdState, newVelocityScale, bKill, bDestroy, destroyDelayTime);
+            crowdElement.DoRangeOperation(agentElement, affectPercent / 100, delayTime, durationTime, nextCrowdState, newSpeed, bKill, bDestroy, destroyDelayTime);
             DisableController();
         }else if(controllerType == ControllerType.Attach)
         {
-            crowdElement.DoAttachOperation(agentElement, bKill, nextCrowdState, newVelocityScale, durationTime, bDestroy, destroyDelayTime);
+            crowdElement.DoAttachOperation(agentElement, bKill, nextCrowdState, newSpeed, durationTime, bDestroy, destroyDelayTime);
         }
         else if(controllerType == ControllerType.TempleteExplose)
         {

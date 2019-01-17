@@ -238,18 +238,19 @@ public class AAgentElement : MonoBehaviour {
         }
     }
     public void SetNavMeshAgentSpeed(float t)
-    { 
-        if(m_navMeshAgent)
-            m_navMeshAgent.speed = t;
+    {
+        if (t != -1)
+        {
+            if (m_navMeshAgent)
+                m_navMeshAgent.speed = t;
+        }
     }
     public void SetNavMeshAgentVelocity(float t)
     {
-        if (t == -1)
+        if (m_navMeshAgent)
         {
-            return;
+            m_navMeshAgent.velocity =  t * m_navMeshAgent.velocity;
         }
-        if(m_navMeshAgent)
-            m_navMeshAgent.velocity = t * m_navMeshAgent.velocity;
 
     }
     public void DoRangeOperation(AgentState agentState, float delayTime, float speed, bool kill,bool destroy, float delayDesTime) {
@@ -258,7 +259,8 @@ public class AAgentElement : MonoBehaviour {
     IEnumerator IRangeOperation(AgentState agentState, float delayTime, float speed, bool kill, bool destroy, float delayDesTime)
     {
         yield return new WaitForSeconds(delayTime);
-        SetNavMeshAgentVelocity(speed);
+        SetNavMeshAgentSpeed(speed);
+        //SetNavMeshAgentVelocity(speed);
         ChangeStateImmediate(agentState);
         m_crowdElement.DoKillAgent(this, kill);
         m_crowdElement.DoDestroyAgent(this, destroy, delayDesTime);

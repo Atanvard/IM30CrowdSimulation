@@ -108,11 +108,13 @@ public class ACrowdElement : MonoBehaviour
 
         return true;
     }
-    public void DoAttachOperation(AAgentElement agentElement, bool kill, AgentState nextState, float newVelocityScale, float durTime, bool destroy, float delayTime)
+    public void DoAttachOperation(AAgentElement agentElement, bool kill, AgentState nextState, float newSpeed, float durTime, bool destroy, float delayTime)
     {
         agentElement.ChangeStateImmediate(nextState);
         agentElement.SetNavMeshAgentActive(false);
-        agentElement.SetNavMeshAgentVelocity(newVelocityScale);
+
+        agentElement.SetNavMeshAgentSpeed(newSpeed);
+        agentElement.SetNavMeshAgentVelocity(0);
         DoKillAgent(agentElement, kill);
         DoDestroyAgent(agentElement, destroy, delayTime);
         if (!kill || !destroy)
