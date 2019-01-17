@@ -27,7 +27,7 @@ public class ACrowdElement : MonoBehaviour
     public float maxRandomSpeed;
     public float animationScale = 0.1f;
     public bool bRandomAnimationStartFrame = true;
-    // Use this for initialization
+
     void Start () {
         m_ownAgents = GetComponentsInChildren<AAgentElement>();
         m_currentTargetPositionList = new List<Vector3>();
@@ -36,12 +36,7 @@ public class ACrowdElement : MonoBehaviour
         {
             bAnimator = true;
         }
-        //Initialization();
 	}
-    void Initialization()
-    {
-
-    }
     public bool SetNewCrowdDestination(Vector3[] p)
     {
         if (p.Length == 0)
@@ -113,12 +108,18 @@ public class ACrowdElement : MonoBehaviour
 
         return true;
     }
-    public void DoAttachOperation(AAgentElement agentElement, bool kill, AgentState nextState, float newVelocityScale, float durTime)
+    public void DoAttachOperation(AAgentElement agentElement, bool kill, AgentState nextState, float newVelocityScale, float durTime, bool destroy, float delayTime)
     {
         agentElement.ChangeStateImmediate(nextState);
         agentElement.SetNavMeshAgentActive(false);
         agentElement.SetNavMeshAgentVelocity(newVelocityScale);
-        StartCoroutine(IRecoverOrigin(durTime, agentElement, agentElement.agentNavSpeed));
+        DoKillAgent(agentElement, kill);
+        DoDestroyAgent(agentElement, destroy, delayTime);
+        if (!kill || !destroy)
+        {
+            StartCoroutine(IRecoverOrigin(durTime, agentElement, agentElement.agentNavSpeed));
+        }
+
     }
     IEnumerator IRecoverOrigin(float deltaTime,AAgentElement agentElement, float oldSpeed)
     {
@@ -127,17 +128,35 @@ public class ACrowdElement : MonoBehaviour
         agentElement.SetNavMeshAgentSpeed(oldSpeed);
         agentElement.ChangeStateImmediate(AgentState.Move);
     }
-    public void RemoveLiveList(AAgentElement agentElement, bool kill)
+    public void DoKillAgent(AAgentElement agentElement, bool kill)
     {
         if (kill)
         {
             m_liveAgentList.Remove(agentElement);
+            agentElement.SetPuppetDead();
         }
     }
-    public void DoRangeOperation(AAgentElement agentElement, float lethalPercent, float delayTime, float durationTime, AgentState agentNextState, float speed, bool kill) {
-        StartCoroutine(IRangeOperation(agentElement, lethalPercent, delayTime, durationTime, agentNextState, speed, kill));
+    public void DoDestroyAgent(AAgentElement agentElement, bool destroy, float delayTime)
+    {
+        if (destroy)
+        {
+            StartCoroutine(IDoDestroyAgent(agentElement, delayTime));
+        }
     }
-    IEnumerator IRangeOperation(AAgentElement agentElement, float percent, float delay, float durating, AgentState state, float speed, bool kill)
+    IEnumerator IDoDestroyAgent(AAgentElement agentElement, float delayTime)
+    {
+        yield return new WaitForSeconds(delayTime);
+        if (m_liveAgentList.Contains(agentElement))
+        {
+            m_liveAgentList.Remove(agentElement);
+        }
+        if(agentElement!= null)
+            Destroy(agentElement.gameObject);
+    }
+    public void DoRangeOperation(AAgentElement agentElement, float lethalPercent, float delayTime, float durationTime, AgentState agentNextState, float speed, bool kill, bool destroy, float delayDesTime ) {
+        StartCoroutine(IRangeOperation(agentElement, lethalPercent, delayTime, durationTime, agentNextState, speed, kill, destroy, delayDesTime));
+    }
+    IEnumerator IRangeOperation(AAgentElement agentElement, float percent, float delay, float durating, AgentState state, float speed, bool kill, bool destroy, float delayDesTime)
     {
         yield return new WaitForSeconds(delay);
         int totalNum = m_liveAgentList.Count;
@@ -154,10 +173,6 @@ public class ACrowdElement : MonoBehaviour
                 AAgentElement currentAgant = unchangeAgentsList[current];
                 changeAgentsList.Add(currentAgant);
                 unchangeAgentsList.Remove(currentAgant);
-                if (kill)
-                {
-                    m_liveAgentList.Remove(currentAgant);
-                }
             }
             bLock = true;
         }
@@ -170,7 +185,7 @@ public class ACrowdElement : MonoBehaviour
             }
             for(int i=0;i<changeAgentsList.Count;i++)
             {
-                changeAgentsList[i].DoRangeOperation(state,duratingUnitTime*i, speed, kill);
+                changeAgentsList[i].DoRangeOperation(state,duratingUnitTime*i, speed, kill, destroy, delayDesTime);
             }           
 
         }

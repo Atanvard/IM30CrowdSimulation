@@ -8,13 +8,14 @@ public enum ControllerType { Range, Attach, TempleteExplose, TempleteColider };
 public class AController : MonoBehaviour {
     public ControllerType controllerType;
     public AgentState nextCrowdState;
-    [Range(0,100)]
     public float affectPercent=0;
     public float delayTime=0;
     public float durationTime=1;
     public float exploseForce = 10;
     public float exploseRadius = 10;
     public bool bKill = false;
+    public bool bDestroy = false;
+    public float destroyDelayTime = 0;
     public bool enable {
         get
         {
@@ -32,7 +33,7 @@ public class AController : MonoBehaviour {
     private Rigidbody m_rigidbody;
     private Color m_gizmoColor = Color.white;
     private Collider m_colider;
-	// Use this for initialization
+
 	void Start () {
         m_colider = GetComponent<Collider>();
         m_rigidbody = GetComponent<Rigidbody>();
@@ -49,6 +50,7 @@ public class AController : MonoBehaviour {
             child.transform.localScale = Vector3.one;
         }
     }
+
     private void OnDrawGizmos()
     {
         Matrix4x4 rotationMatrix = transform.localToWorldMatrix;
@@ -65,28 +67,27 @@ public class AController : MonoBehaviour {
         Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
         Gizmos.DrawWireCube(Vector3.zero, Vector3.one * 0.9f);
     }
+
     public void Reponse(ACrowdElement crowdElement,AAgentElement agentElement)
     {
+        ChangeGizmoColor(Color.black);
         if (controllerType == ControllerType.Range) { 
-            crowdElement.DoRangeOperation(agentElement, affectPercent / 100, delayTime, durationTime, nextCrowdState, newVelocityScale, bKill);
+            crowdElement.DoRangeOperation(agentElement, affectPercent / 100, delayTime, durationTime, nextCrowdState, newVelocityScale, bKill, bDestroy, destroyDelayTime);
             DisableController();
-            ChangeGizmoColor(Color.black);
         }else if(controllerType == ControllerType.Attach)
         {
-            crowdElement.DoAttachOperation(agentElement, bKill, nextCrowdState, newVelocityScale, durationTime);
-            ChangeGizmoColor(Color.black);
-            crowdElement.RemoveLiveList(agentElement,bKill);
+            crowdElement.DoAttachOperation(agentElement, bKill, nextCrowdState, newVelocityScale, durationTime, bDestroy, destroyDelayTime);
         }
         else if(controllerType == ControllerType.TempleteExplose)
         {
             Invoke("DisableController", durationTime);
-            ChangeGizmoColor(Color.black);
-            crowdElement.RemoveLiveList(agentElement, bKill);
+            crowdElement.DoKillAgent(agentElement, bKill);
+            crowdElement.DoDestroyAgent(agentElement, bDestroy,destroyDelayTime);
         }
         else if(controllerType == ControllerType.TempleteColider)
         {
-            ChangeGizmoColor(Color.black);
-            crowdElement.RemoveLiveList(agentElement, bKill);
+            crowdElement.DoKillAgent(agentElement, bKill);
+            crowdElement.DoDestroyAgent(agentElement, bDestroy, destroyDelayTime);
         }
     }
 
@@ -94,16 +95,10 @@ public class AController : MonoBehaviour {
     {
         m_gizmoColor = c;
     }
+
 	bool DisableController()
     {
-        //Material material = new Material(Shader.Find("Standard"));
-        //material.SetVector("_Color",new Vector4(1,0,0,0.1f));
-        //GetComponent<Renderer>().material = material;
         this.enable = false;
         return true;
     }
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }

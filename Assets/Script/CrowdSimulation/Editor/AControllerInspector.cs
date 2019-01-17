@@ -19,30 +19,36 @@ public class AControllerInspector : Editor
         EditorGUILayout.Separator();
         GUILayout.Label("Detail");
         currentTarget.nextCrowdState = (AgentState)EditorGUILayout.EnumPopup("Next animation state", currentTarget.nextCrowdState);
-        if(currentTarget.controllerType == ControllerType.Range)
+
+        currentTarget.bKill = EditorGUILayout.ToggleLeft("Whether kill agent", currentTarget.bKill);
+        currentTarget.bDestroy = EditorGUILayout.ToggleLeft("Whether destroy agent", currentTarget.bDestroy);
+        if (currentTarget.bDestroy)
+        {
+            ++EditorGUI.indentLevel;
+            currentTarget.destroyDelayTime = EditorGUILayout.Slider("Destroy delay time(sec)", currentTarget.destroyDelayTime, 0, 30);
+            --EditorGUI.indentLevel;
+        }
+        EditorGUILayout.Separator();
+        if (currentTarget.controllerType == ControllerType.Range)
         {
             currentTarget.affectPercent = EditorGUILayout.Slider("Affect crowd percent", currentTarget.affectPercent, 0, 100);
             currentTarget.delayTime =  EditorGUILayout.Slider("Delay start time(sec)", currentTarget.delayTime, 0, 10);
-            currentTarget.durationTime =  EditorGUILayout.Slider("During time(sec)", currentTarget.durationTime, 0, 100);
+            currentTarget.durationTime =  EditorGUILayout.Slider("During time(sec)", currentTarget.durationTime, 0, 300);
             currentTarget.newVelocityScale = EditorGUILayout.FloatField("New velocity scale", currentTarget.newVelocityScale);
-            currentTarget.bKill = EditorGUILayout.ToggleLeft("Whether kill agent", currentTarget.bKill);
         }
         else if(currentTarget.controllerType == ControllerType.Attach)
         {
             currentTarget.newVelocityScale = EditorGUILayout.FloatField("New velocity scale", currentTarget.newVelocityScale);
-            currentTarget.durationTime = EditorGUILayout.Slider("During time(sec)", currentTarget.durationTime, 0, 100);
-            currentTarget.bKill = EditorGUILayout.ToggleLeft("Whether kill agent", currentTarget.bKill);
+            currentTarget.durationTime = EditorGUILayout.Slider("During time(sec)", currentTarget.durationTime, 0, 300);
         }
         else if(currentTarget.controllerType == ControllerType.TempleteExplose)
         {
             currentTarget.exploseForce =  EditorGUILayout.FloatField("Explose force", currentTarget.exploseForce);
             //currentTarget.exploseRadius =  EditorGUILayout.FloatField("Explose radius", currentTarget.exploseRadius);
-            currentTarget.durationTime = EditorGUILayout.Slider("During time(sec)", currentTarget.durationTime, 0, 100);
-            currentTarget.bKill = EditorGUILayout.ToggleLeft("Whether kill agent", currentTarget.bKill);
+            currentTarget.durationTime = EditorGUILayout.Slider("During time(sec)", currentTarget.durationTime, 0, 300);
         }
         else if(currentTarget.controllerType == ControllerType.TempleteColider)
         {
-            currentTarget.bKill = EditorGUILayout.ToggleLeft("Whether kill agent", currentTarget.bKill);
         }
         //base.DrawDefaultInspector();
     }

@@ -166,7 +166,7 @@ public class AAgentElement : MonoBehaviour {
             m_puppetMaster.pinWeight = t;
         }
     }
-    void SetPuppetDead()
+    public void SetPuppetDead()
     {
         if (m_puppetMaster)
         {
@@ -252,20 +252,17 @@ public class AAgentElement : MonoBehaviour {
             m_navMeshAgent.velocity = t * m_navMeshAgent.velocity;
 
     }
-    public void DoRangeOperation(AgentState agentState, float delayTime, float speed, bool kill) {
-        StartCoroutine(IRangeOperation(agentState, delayTime, speed, kill));
+    public void DoRangeOperation(AgentState agentState, float delayTime, float speed, bool kill,bool destroy, float delayDesTime) {
+        StartCoroutine(IRangeOperation(agentState, delayTime, speed, kill, destroy, delayDesTime));
     }
-    IEnumerator IRangeOperation(AgentState agentState, float delayTime, float speed, bool kill)
+    IEnumerator IRangeOperation(AgentState agentState, float delayTime, float speed, bool kill, bool destroy, float delayDesTime)
     {
         yield return new WaitForSeconds(delayTime);
         SetNavMeshAgentVelocity(speed);
         ChangeStateImmediate(agentState);
-        if(kill)
-        {
-            SetPuppetDead();
-            RemoveNavMeshAgent();
-            RemoveCollider();
-        }
+        m_crowdElement.DoKillAgent(this, kill);
+        m_crowdElement.DoDestroyAgent(this, destroy, delayDesTime);
+
     }
 
 
