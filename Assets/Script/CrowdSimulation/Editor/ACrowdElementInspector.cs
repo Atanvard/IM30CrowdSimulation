@@ -28,7 +28,7 @@ public class ACrowdElementInspector : Editor {
 
         GUI.skin.label.fontSize = 16;
         GUILayout.Label("Parameter");
-        currentTarget.bRandomSpeed = EditorGUILayout.ToggleLeft("Whether need random speed", currentTarget.bRandomSpeed);
+        currentTarget.bRandomSpeed = EditorGUILayout.ToggleLeft("Random move speed", currentTarget.bRandomSpeed);
         if (currentTarget.bRandomSpeed)
         {
             EditorGUILayout.LabelField("Min random speed", currentTarget.minRandomSpeed.ToString());
@@ -37,6 +37,7 @@ public class ACrowdElementInspector : Editor {
         }
         currentTarget.navStopDistance = EditorGUILayout.FloatField("Stop distance", currentTarget.navStopDistance);
         currentTarget.animationScale = EditorGUILayout.FloatField("Move animation scale", currentTarget.animationScale);
+        currentTarget.bRandomAnimationStartFrame = EditorGUILayout.ToggleLeft("Random animation offset", currentTarget.bRandomAnimationStartFrame);
         //base.DrawDefaultInspector();
     }
 }

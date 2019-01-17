@@ -73,15 +73,20 @@ public class AController : MonoBehaviour {
             ChangeGizmoColor(Color.black);
         }else if(controllerType == ControllerType.Attach)
         {
-            crowdElement.DoAttachOperation(agentElement, bKill, nextCrowdState, newVelocityScale);
+            crowdElement.DoAttachOperation(agentElement, bKill, nextCrowdState, newVelocityScale, durationTime);
             ChangeGizmoColor(Color.black);
-        }else if(controllerType == ControllerType.TempleteExplose)
+            crowdElement.RemoveLiveList(agentElement,bKill);
+        }
+        else if(controllerType == ControllerType.TempleteExplose)
         {
             Invoke("DisableController", durationTime);
             ChangeGizmoColor(Color.black);
-        }else if(controllerType == ControllerType.TempleteColider)
+            crowdElement.RemoveLiveList(agentElement, bKill);
+        }
+        else if(controllerType == ControllerType.TempleteColider)
         {
             ChangeGizmoColor(Color.black);
+            crowdElement.RemoveLiveList(agentElement, bKill);
         }
     }
 

@@ -26,6 +26,7 @@ public class ACrowdElement : MonoBehaviour
     public float minRandomSpeed;
     public float maxRandomSpeed;
     public float animationScale = 0.1f;
+    public bool bRandomAnimationStartFrame = true;
     // Use this for initialization
     void Start () {
         m_ownAgents = GetComponentsInChildren<AAgentElement>();
@@ -85,11 +86,9 @@ public class ACrowdElement : MonoBehaviour
                 {
                     Debug.Log("waiting subThread");
                 }
-                Debug.Log(totalNum);
                 for (int i = 0; i < totalNum; i++)
                 {
                     m_liveAgentList[i].ChangeStateImmediate(AgentState.Move);
-                    //m_liveAgentList[i].SetAnimationClip("Move");
                     m_liveAgentList[i].SetNavDestination(tmpDes[i]);
                     if (bRandomSpeed)
                         m_liveAgentList[i].SetNavMeshAgentSpeed(UnityEngine.Random.Range(minRandomSpeed, maxRandomSpeed));
@@ -103,7 +102,6 @@ public class ACrowdElement : MonoBehaviour
     public bool SetNewCrowdDestination(Vector3 p)
     {
         int totalNum = m_liveAgentList.Count;
-        Debug.Log(totalNum);
         for (int i = 0; i < totalNum; i++)
         {
             m_liveAgentList[i].ChangeStateImmediate(AgentState.Move);
@@ -115,19 +113,25 @@ public class ACrowdElement : MonoBehaviour
 
         return true;
     }
-    public void DoAttachOperation(AAgentElement agentElement, bool kill, AgentState nextState, float newVelocityScale)
+    public void DoAttachOperation(AAgentElement agentElement, bool kill, AgentState nextState, float newVelocityScale, float durTime)
+    {
+        agentElement.ChangeStateImmediate(nextState);
+        agentElement.SetNavMeshAgentActive(false);
+        agentElement.SetNavMeshAgentVelocity(newVelocityScale);
+        StartCoroutine(IRecoverOrigin(durTime, agentElement, agentElement.agentNavSpeed));
+    }
+    IEnumerator IRecoverOrigin(float deltaTime,AAgentElement agentElement, float oldSpeed)
+    {
+        yield return new WaitForSeconds(deltaTime);
+        agentElement.SetNavMeshAgentActive(true);
+        agentElement.SetNavMeshAgentSpeed(oldSpeed);
+        agentElement.ChangeStateImmediate(AgentState.Move);
+    }
+    public void RemoveLiveList(AAgentElement agentElement, bool kill)
     {
         if (kill)
         {
             m_liveAgentList.Remove(agentElement);
-            agentElement.RemoveNavMeshAgent();
-            agentElement.RemoveCollider();
-        }
-        else
-        {
-            agentElement.ChangeStateImmediate(nextState);
-            agentElement.SetNavMeshAgentActive(false);
-            agentElement.SetNavMeshAgentVelocity(newVelocityScale);
         }
     }
     public void DoRangeOperation(AAgentElement agentElement, float lethalPercent, float delayTime, float durationTime, AgentState agentNextState, float speed, bool kill) {

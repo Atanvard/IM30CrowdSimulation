@@ -45,15 +45,29 @@ public class AAgentElement : MonoBehaviour {
         m_animator = this.GetComponentInChildren<Animator>();
         m_puppetMaster = this.GetComponentInChildren<PuppetMaster>();
         Invoke("Init",0.1f);
-        InvokeRepeating("SetAnimationSpeed", 0f, 0.3f);
+        InvokeRepeating("MatchMoveAnimationSpeed", 0.1f, 0.3f);
     }
 
 	void Init()
     {
         //TODO : Using configuration file
         m_navMeshAgent.stoppingDistance = m_crowdElement.navStopDistance;
-        SetAnimationClip("Idle");
-
+        if (m_crowdElement.bRandomAnimationStartFrame)
+        {
+            if (m_crowdElement.bAnimator)
+            {
+                m_animator.Play("Idle", 0, Random.Range(0f, 1f));
+            }
+            else
+            {
+                m_animationInstancing.PlayAnimation("Idle");
+                m_animationInstancing.preAniFrame = Random.Range(0, m_animationInstancing.GetCurrentAnimationInfo().totalFrame) ;
+            }
+        }
+        else
+        {
+            SetAnimationClip("Idle");
+        }
         //m_animator.CrossFade("Move", 0.1f);
     }
 
@@ -85,15 +99,20 @@ public class AAgentElement : MonoBehaviour {
             }
             else if (tmp.controllerType == ControllerType.TempleteColider)
             {
+                tmp.Reponse(m_crowdElement, this);
+                ChangeStateImmediate(tmp.nextCrowdState);
                 RemoveCollider();
                 RemoveNavMeshAgent();  //TODO: not use remove
                 SetPuppetPinWeight(0);
-                ChangeStateImmediate(tmp.nextCrowdState);
+                if (tmp.bKill)
+                {
+                    SetPuppetDead();
+                }
             }
         }
     }
 
-    void SetAnimationSpeed()
+    void MatchMoveAnimationSpeed()
     {
         if (m_navMeshAgent && currentAgentState == AgentState.Move)
         {

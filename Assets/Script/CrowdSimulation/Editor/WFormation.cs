@@ -1,43 +1,36 @@
-// create by liudi
-
 using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace FormationSetup
+namespace CrowdSimulationWindow
 {
-    //编队条目
-
     public class FormationItem
     {
         private int mIndex = -1;
-        protected FormationType mFormationType;
+        protected CrowdFormationType mFormationType;
         protected GameObject itemPrefab = null;
-        protected FormationSetupWindow mParent;
+        protected WSettingWindow mParent;
         protected float mLineSpace = 10;
         protected float mColumnSpace = 10;
         protected Boolean m_bInOrder = true;
 
 
-        static public FormationItem createFormation(FormationSetupWindow parent, int index, FormationType formationType)
+        static public FormationItem createFormation(WSettingWindow parent,  CrowdFormationType formationType)
         {
             switch (formationType)
             {
-                    case FormationType.Trangle:
-                        return new TrangleFormation(parent, index, formationType);
-                    case FormationType.Round:
-                        return new RoundFormation(parent, index, formationType);
-                    case FormationType.Rect:
-                        return new RectFormation(parent, index, formationType);
+                case CrowdFormationType.Rect:
+                    return new RectFormation(parent, formationType);
+                case CrowdFormationType.Round:
+                    return new RoundFormation(parent, formationType);
             }
 
             return null;
         }
 
-        public FormationItem(FormationSetupWindow parent, int index, FormationType formationType)
+        public FormationItem(WSettingWindow parent,  CrowdFormationType formationType)
         {
             mParent = parent;
-            mIndex = index;
             mFormationType = formationType;
         }
 
@@ -57,7 +50,7 @@ namespace FormationSetup
 
         private void createNormal()
         {
-            GUILayout.Label("编队" + (mIndex + 1) + ": " + FormationSetupWindow.options[(int) mFormationType]);
+            GUILayout.Label("编队" + (mIndex + 1) + ": " + WSettingWindow.options[(int)mFormationType]);
             var obj = EditorGUILayout.ObjectField(
                 "资源Prefab",
                 itemPrefab,
@@ -65,7 +58,7 @@ namespace FormationSetup
             if (obj != null && PrefabUtility.GetPrefabType(obj) == PrefabType.Prefab)
             {
                 // prefab valid
-                itemPrefab = (GameObject) obj;
+                itemPrefab = (GameObject)obj;
             }
             else if (obj == null)
             {
@@ -84,9 +77,9 @@ namespace FormationSetup
 
         protected virtual void createSpecial()
         {
-            
+
         }
-        
+
         public virtual bool checkValid()
         {
             bool valid = true;

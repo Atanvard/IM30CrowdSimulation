@@ -18,7 +18,7 @@ public class AControllerInspector : Editor
         EditorGUILayout.Separator();
         EditorGUILayout.Separator();
         GUILayout.Label("Detail");
-        currentTarget.nextCrowdState = (AgentState)EditorGUILayout.EnumPopup("Next crowd state", currentTarget.nextCrowdState);
+        currentTarget.nextCrowdState = (AgentState)EditorGUILayout.EnumPopup("Next animation state", currentTarget.nextCrowdState);
         if(currentTarget.controllerType == ControllerType.Range)
         {
             currentTarget.affectPercent = EditorGUILayout.Slider("Affect crowd percent", currentTarget.affectPercent, 0, 100);
@@ -30,6 +30,7 @@ public class AControllerInspector : Editor
         else if(currentTarget.controllerType == ControllerType.Attach)
         {
             currentTarget.newVelocityScale = EditorGUILayout.FloatField("New velocity scale", currentTarget.newVelocityScale);
+            currentTarget.durationTime = EditorGUILayout.Slider("During time(sec)", currentTarget.durationTime, 0, 100);
             currentTarget.bKill = EditorGUILayout.ToggleLeft("Whether kill agent", currentTarget.bKill);
         }
         else if(currentTarget.controllerType == ControllerType.TempleteExplose)
@@ -37,6 +38,7 @@ public class AControllerInspector : Editor
             currentTarget.exploseForce =  EditorGUILayout.FloatField("Explose force", currentTarget.exploseForce);
             //currentTarget.exploseRadius =  EditorGUILayout.FloatField("Explose radius", currentTarget.exploseRadius);
             currentTarget.durationTime = EditorGUILayout.Slider("During time(sec)", currentTarget.durationTime, 0, 100);
+            currentTarget.bKill = EditorGUILayout.ToggleLeft("Whether kill agent", currentTarget.bKill);
         }
         else if(currentTarget.controllerType == ControllerType.TempleteColider)
         {

@@ -3,13 +3,13 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace FormationSetup
+namespace CrowdSimulationWindow
 {
     public class RectFormation : FormationItem
     {
         private int mRectLineCount;
         private int mRectRow;
-        public RectFormation(FormationSetupWindow parent, int index, FormationType formationType) : base(parent, index, formationType)
+        public RectFormation(WSettingWindow parent, CrowdFormationType formationType) : base(parent, formationType)
         {
         }
 
@@ -40,7 +40,7 @@ namespace FormationSetup
                 {
                     var newObject = GameObject.Instantiate(itemPrefab);
                     newObject.transform.parent = mParent.rootObj.transform;
-                    newObject.transform.localPosition = itemPoint + (m_bInOrder ? Vector3.zero:new Vector3(Random.Range(-mColumnSpace, mColumnSpace), 0, Random.Range(-mLineSpace, mLineSpace)));
+                    newObject.transform.localPosition = itemPoint + (m_bInOrder ? Vector3.zero : new Vector3(Random.Range(-mColumnSpace, mColumnSpace), 0, Random.Range(-mLineSpace, mLineSpace)));
                     newObject.name = itemPrefab.name;
                     itemPoint.z += mLineSpace;
                 }
