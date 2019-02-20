@@ -12,6 +12,7 @@ public class APath : MonoBehaviour {
     int m_totalPathCount;
     int m_activedpathCount;
     public ACrowdElement[] affectCrowdElement;
+    public float triggerRadius = 5f;
     // Use this for initialization
 
     private void OnDrawGizmos()
@@ -55,7 +56,11 @@ public class APath : MonoBehaviour {
                 float tmpZ = Vector3.Distance(list.position[i], list.position[i + 1]);
                 if (tmpZ != 0)
                 {
-                    obj.transform.localScale = new Vector3(3, 3, tmpZ);
+                    obj.transform.localScale = new Vector3(triggerRadius, triggerRadius, tmpZ);
+                }
+                else
+                {
+                    obj.transform.localScale = new Vector3(triggerRadius, triggerRadius, triggerRadius);
                 }
             }
         }

@@ -15,7 +15,10 @@ public class AController : MonoBehaviour {
     public float exploseRadius = 10;
     public bool bKill = false;
     public bool bDestroy = false;
+    public bool bSetNewSpeed = false;
     public float destroyDelayTime = 0;
+    [SerializeField]
+    public ACrowdElement[] affectCrowds;
     public bool enable {
         get
         {
@@ -29,7 +32,8 @@ public class AController : MonoBehaviour {
     /// <summary>
     /// speed after attach,if newSpeed.x = -1 means use origin speed.
     /// </summary>
-    public float newSpeed = 1f;
+    public float newMinSpeed = -1f;
+    public float newMaxSpeed = -1f;
     private Rigidbody m_rigidbody;
     private Color m_gizmoColor = Color.white;
     private Collider m_colider;
@@ -72,11 +76,11 @@ public class AController : MonoBehaviour {
     {
         ChangeGizmoColor(Color.black);
         if (controllerType == ControllerType.Range) { 
-            crowdElement.DoRangeOperation(agentElement, affectPercent / 100, delayTime, durationTime, nextCrowdState, newSpeed, bKill, bDestroy, destroyDelayTime);
+            crowdElement.DoRangeOperation(agentElement, affectPercent / 100, delayTime, durationTime, nextCrowdState, bSetNewSpeed, newMinSpeed, newMaxSpeed, bKill, bDestroy, destroyDelayTime);
             DisableController();
         }else if(controllerType == ControllerType.Attach)
         {
-            crowdElement.DoAttachOperation(agentElement, bKill, nextCrowdState, newSpeed, durationTime, bDestroy, destroyDelayTime);
+            crowdElement.DoAttachOperation(agentElement, bKill, nextCrowdState, bSetNewSpeed, newMinSpeed, newMaxSpeed, durationTime, bDestroy, destroyDelayTime);
         }
         else if(controllerType == ControllerType.TempleteExplose)
         {

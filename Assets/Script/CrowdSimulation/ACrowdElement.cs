@@ -108,23 +108,25 @@ public class ACrowdElement : MonoBehaviour
 
         return true;
     }
-    public void DoAttachOperation(AAgentElement agentElement, bool kill, AgentState nextState, float newSpeed, float durTime, bool destroy, float delayTime)
+    public void DoAttachOperation(AAgentElement agentElement, bool kill, AgentState nextState, bool bSetNewSpeed, float minNewSpeed, float maxNewSpeed, float durTime, bool destroy, float delayTime)
     {
         float oldSpeed = agentElement.agentNavSpeed;
         agentElement.ChangeStateImmediate(nextState);
         agentElement.SetNavMeshAgentActive(false);
-
-        agentElement.SetNavMeshAgentSpeed(newSpeed);
+        
         agentElement.SetNavMeshAgentVelocity(0);
         DoKillAgent(agentElement, kill);
         DoDestroyAgent(agentElement, destroy, delayTime);
         if (!kill || !destroy)
         {
-            StartCoroutine(IRecoverOrigin(durTime, agentElement, oldSpeed));
+            if(bSetNewSpeed)
+                StartCoroutine(IRecoverOrigin(durTime, agentElement, UnityEngine.Random.Range(minNewSpeed, maxNewSpeed)));
+            else
+                StartCoroutine(IRecoverOrigin(durTime, agentElement, oldSpeed));
         }
 
     }
-    IEnumerator IRecoverOrigin(float deltaTime, AAgentElement agentElement, float oldSpeed)
+    IEnumerator IRecoverOrigin(float deltaTime, AAgentElement agentElement,  float oldSpeed)
     {
         yield return new WaitForSeconds(deltaTime);
         if (agentElement.bKill == false)
@@ -160,10 +162,10 @@ public class ACrowdElement : MonoBehaviour
         if(agentElement!= null)
             Destroy(agentElement.gameObject);
     }
-    public void DoRangeOperation(AAgentElement agentElement, float lethalPercent, float delayTime, float durationTime, AgentState agentNextState, float speed, bool kill, bool destroy, float delayDesTime ) {
-        StartCoroutine(IRangeOperation(agentElement, lethalPercent, delayTime, durationTime, agentNextState, speed, kill, destroy, delayDesTime));
+    public void DoRangeOperation(AAgentElement agentElement, float lethalPercent, float delayTime, float durationTime, AgentState agentNextState, bool bSet, float minNewSpeed, float maxNewSpeed, bool kill, bool destroy, float delayDesTime ) {
+        StartCoroutine(IRangeOperation(agentElement, lethalPercent, delayTime, durationTime, agentNextState, bSet, minNewSpeed, maxNewSpeed, kill, destroy, delayDesTime));
     }
-    IEnumerator IRangeOperation(AAgentElement agentElement, float percent, float delay, float durating, AgentState state, float speed, bool kill, bool destroy, float delayDesTime)
+    IEnumerator IRangeOperation(AAgentElement agentElement, float percent, float delay, float durating, AgentState state, bool bSet, float minNewSpeed, float maxNewSpeed, bool kill, bool destroy, float delayDesTime)
     {
         yield return new WaitForSeconds(delay);
         int totalNum = m_liveAgentList.Count;
@@ -192,7 +194,7 @@ public class ACrowdElement : MonoBehaviour
             }
             for(int i=0;i<changeAgentsList.Count;i++)
             {
-                changeAgentsList[i].DoRangeOperation(state,duratingUnitTime*i, speed, kill, destroy, delayDesTime);
+                changeAgentsList[i].DoRangeOperation(state,duratingUnitTime*i, bSet,minNewSpeed, maxNewSpeed, kill, destroy, delayDesTime);
             }           
 
         }

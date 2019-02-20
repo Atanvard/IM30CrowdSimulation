@@ -4,9 +4,15 @@ using UnityEngine;
 using UnityEditor;
 
 [CustomEditor(typeof(AController))]
+
+[CanEditMultipleObjects]
 public class AControllerInspector : Editor
 {
     public ControllerType controllerType;
+    SerializedProperty m_crowsProperty;
+    void OnEnable()
+    {
+    }
     public override void OnInspectorGUI()
     {
         GUI.skin.label.fontSize = 16;
@@ -15,6 +21,10 @@ public class AControllerInspector : Editor
         GUILayout.Label("Type");
         currentTarget.enable = EditorGUILayout.ToggleLeft("Enable", currentTarget.enable);
         currentTarget.controllerType =  (ControllerType)EditorGUILayout.EnumPopup("Controller type", currentTarget.controllerType);
+        m_crowsProperty = serializedObject.FindProperty("affectCrowds");
+        serializedObject.Update();
+        EditorGUILayout.PropertyField(m_crowsProperty, true);
+        serializedObject.ApplyModifiedProperties();
         EditorGUILayout.Separator();
         EditorGUILayout.Separator();
         GUILayout.Label("Detail");
@@ -33,13 +43,25 @@ public class AControllerInspector : Editor
         {
             currentTarget.affectPercent = EditorGUILayout.Slider("Affect crowd percent", currentTarget.affectPercent, 0, 100);
             currentTarget.delayTime =  EditorGUILayout.Slider("Delay start time(sec)", currentTarget.delayTime, 0, 10);
-            currentTarget.durationTime =  EditorGUILayout.Slider("During time(sec)", currentTarget.durationTime, 0, 300);
-            currentTarget.newSpeed = EditorGUILayout.FloatField("New speed", currentTarget.newSpeed);
+            currentTarget.durationTime =  EditorGUILayout.Slider("During time(sec)", currentTarget.durationTime, 0.1f, 300);
+            currentTarget.bSetNewSpeed = EditorGUILayout.ToggleLeft("Set new speed", currentTarget.bSetNewSpeed);
+            if (currentTarget.bSetNewSpeed)
+            {
+                EditorGUILayout.LabelField("Min random speed", currentTarget.newMinSpeed.ToString());
+                EditorGUILayout.LabelField("Max random speed", currentTarget.newMaxSpeed.ToString());
+                EditorGUILayout.MinMaxSlider(ref currentTarget.newMinSpeed, ref currentTarget.newMaxSpeed, 0, 100);
+            }
         }
         else if(currentTarget.controllerType == ControllerType.Attach)
         {
-            currentTarget.newSpeed = EditorGUILayout.FloatField("New speed", currentTarget.newSpeed);
-            currentTarget.durationTime = EditorGUILayout.Slider("During time(sec)", currentTarget.durationTime, 0, 300);
+            currentTarget.bSetNewSpeed = EditorGUILayout.ToggleLeft("Set new speed", currentTarget.bSetNewSpeed);
+            if (currentTarget.bSetNewSpeed)
+            {
+                EditorGUILayout.LabelField("Min random speed", currentTarget.newMinSpeed.ToString());
+                EditorGUILayout.LabelField("Max random speed", currentTarget.newMaxSpeed.ToString());
+                EditorGUILayout.MinMaxSlider(ref currentTarget.newMinSpeed, ref currentTarget.newMaxSpeed, 0, 100);
+            }
+            currentTarget.durationTime = EditorGUILayout.Slider("During time(sec)", currentTarget.durationTime, 0.1f, 300);
         }
         else if(currentTarget.controllerType == ControllerType.TempleteExplose)
         {

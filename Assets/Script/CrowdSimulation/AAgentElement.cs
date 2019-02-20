@@ -75,37 +75,43 @@ public class AAgentElement : MonoBehaviour {
         if (other.gameObject.layer == LayerMask.NameToLayer("physicalController"))
         {
             AController tmp = other.GetComponent<AController>();
-            if (tmp.controllerType == ControllerType.Range)
+            foreach( var crow in tmp.affectCrowds)
             {
-                tmp.Reponse(m_crowdElement, this);
-                //PerformanceOptimization();
-            }
-            else if (tmp.controllerType == ControllerType.Attach)
-            {
-                tmp.Reponse(m_crowdElement,this);
-                //PerformanceOptimization();
-            }
-            else if (tmp.controllerType == ControllerType.TempleteExplose)
-            {
-                if (m_rigidbody == null)
+                if(crow == this.m_crowdElement)
                 {
-                    m_rigidbody = this.gameObject.AddComponent<Rigidbody>();
-                }
-                RemoveNavMeshAgent();
-                DoControllerExplose(tmp);
-                tmp.Reponse(m_crowdElement,this);
-                ChangeStateImmediate(tmp.nextCrowdState);
-            }
-            else if (tmp.controllerType == ControllerType.TempleteColider)
-            {
-                tmp.Reponse(m_crowdElement, this);
-                ChangeStateImmediate(tmp.nextCrowdState);
-                RemoveCollider();
-                RemoveNavMeshAgent();  //TODO: not use remove
-                SetPuppetPinWeight(0);
-                if (tmp.bKill)
-                {
-                    SetPuppetDead();
+                    if (tmp.controllerType == ControllerType.Range)
+                    {
+                        tmp.Reponse(m_crowdElement, this);
+                        //PerformanceOptimization();
+                    }
+                    else if (tmp.controllerType == ControllerType.Attach)
+                    {
+                        tmp.Reponse(m_crowdElement, this);
+                        //PerformanceOptimization();
+                    }
+                    else if (tmp.controllerType == ControllerType.TempleteExplose)
+                    {
+                        if (m_rigidbody == null)
+                        {
+                            m_rigidbody = this.gameObject.AddComponent<Rigidbody>();
+                        }
+                        RemoveNavMeshAgent();
+                        DoControllerExplose(tmp);
+                        tmp.Reponse(m_crowdElement, this);
+                        ChangeStateImmediate(tmp.nextCrowdState);
+                    }
+                    else if (tmp.controllerType == ControllerType.TempleteColider)
+                    {
+                        tmp.Reponse(m_crowdElement, this);
+                        ChangeStateImmediate(tmp.nextCrowdState);
+                        RemoveCollider();
+                        RemoveNavMeshAgent();  //TODO: not use remove
+                        SetPuppetPinWeight(0);
+                        if (tmp.bKill)
+                        {
+                            SetPuppetDead();
+                        }
+                    }
                 }
             }
         }
@@ -239,11 +245,8 @@ public class AAgentElement : MonoBehaviour {
     }
     public void SetNavMeshAgentSpeed(float t)
     {
-        if (t != -1)
-        {
             if (m_navMeshAgent)
                 m_navMeshAgent.speed = t;
-        }
     }
     public void SetNavMeshAgentVelocity(float t)
     {
@@ -253,14 +256,19 @@ public class AAgentElement : MonoBehaviour {
         }
 
     }
-    public void DoRangeOperation(AgentState agentState, float delayTime, float speed, bool kill,bool destroy, float delayDesTime) {
-        StartCoroutine(IRangeOperation(agentState, delayTime, speed, kill, destroy, delayDesTime));
+    public void DoRangeOperation(AgentState agentState, float delayTime, bool bSet, float minNewSpeed, float maxNewSpeed, bool kill,bool destroy, float delayDesTime) {
+        StartCoroutine(IRangeOperation(agentState, delayTime, bSet, minNewSpeed, maxNewSpeed, kill, destroy, delayDesTime));
     }
-    IEnumerator IRangeOperation(AgentState agentState, float delayTime, float speed, bool kill, bool destroy, float delayDesTime)
+    IEnumerator IRangeOperation(AgentState agentState, float delayTime, bool bSet, float minNewSpeed, float maxNewSpeed, bool kill, bool destroy, float delayDesTime)
     {
         yield return new WaitForSeconds(delayTime);
-        SetNavMeshAgentSpeed(speed);
-        //SetNavMeshAgentVelocity(speed);
+        if(bSet)
+        SetNavMeshAgentSpeed(Random.Range(minNewSpeed, maxNewSpeed));
+        else if (kill)
+        {
+            SetNavMeshAgentSpeed(0);
+            SetNavMeshAgentVelocity(0);
+        }
         ChangeStateImmediate(agentState);
         m_crowdElement.DoKillAgent(this, kill);
         m_crowdElement.DoDestroyAgent(this, destroy, delayDesTime);
