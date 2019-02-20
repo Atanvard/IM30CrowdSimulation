@@ -55,9 +55,10 @@ namespace CrowdSimulationWindow
             GUI.skin.label.fontSize = 16;
             GUILayout.Label("Crowd Setting", EditorStyles.boldLabel);
             m_currentFormationType = (CrowdFormationType)EditorGUILayout.Popup("Crowd Formation", (int)m_currentFormationType, options);
-            var selectObj = (GameObject)EditorGUILayout.ObjectField("Crowd Root", rootObj, typeof(GameObject), true);
+            EditorGUILayout.ObjectField("Crowd Root", rootObj, typeof(GameObject), true);
             EditorGUILayout.Separator();
-            FormationItem.createFormation(this, m_currentFormationType);
+            FormationItem formationItem =  FormationItem.createFormation(this, m_currentFormationType);
+            formationItem.OnGUI();
             if (GUILayout.Button("Create"))
             {
                 createFormation();
@@ -76,11 +77,6 @@ namespace CrowdSimulationWindow
             }
             else
             {
-                // start create item
-
-                //clear old node
-
-
                 List<Transform> allChildren = new List<Transform>();
                 foreach (Transform child in rootObj.transform)
                 {

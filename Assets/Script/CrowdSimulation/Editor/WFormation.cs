@@ -10,8 +10,8 @@ namespace CrowdSimulationWindow
         protected CrowdFormationType mFormationType;
         protected GameObject itemPrefab = null;
         protected WSettingWindow mParent;
-        protected float mLineSpace = 10;
-        protected float mColumnSpace = 10;
+        protected float m_rowIntervalDis = 10;
+        protected float m_columnIntervalDis = 10;
         protected Boolean m_bInOrder = true;
 
 
@@ -50,9 +50,8 @@ namespace CrowdSimulationWindow
 
         private void createNormal()
         {
-            GUILayout.Label("编队" + (mIndex + 1) + ": " + WSettingWindow.options[(int)mFormationType]);
-            var obj = EditorGUILayout.ObjectField(
-                "资源Prefab",
+           var obj = EditorGUILayout.ObjectField(
+                "Prefab",
                 itemPrefab,
                 typeof(GameObject), false);
             if (obj != null && PrefabUtility.GetPrefabType(obj) == PrefabType.Prefab)
@@ -70,9 +69,9 @@ namespace CrowdSimulationWindow
                 itemPrefab = null;
             }
 
-            mLineSpace = EditorGUILayout.FloatField("行间距", mLineSpace);
-            mColumnSpace = EditorGUILayout.FloatField("列间距", mColumnSpace);
-            m_bInOrder = EditorGUILayout.Toggle("整齐队列", m_bInOrder);
+            m_bInOrder = EditorGUILayout.Toggle("In order", m_bInOrder);
+            m_rowIntervalDis = EditorGUILayout.FloatField("Row interval distance", m_rowIntervalDis);
+            m_columnIntervalDis = EditorGUILayout.FloatField("Column interval distance", m_columnIntervalDis);
         }
 
         protected virtual void createSpecial()

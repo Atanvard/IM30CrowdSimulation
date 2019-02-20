@@ -14,8 +14,8 @@ namespace FormationSetup
         protected FormationType mFormationType;
         protected GameObject itemPrefab = null;
         protected FormationSetupWindow mParent;
-        protected float mLineSpace = 10;
-        protected float mColumnSpace = 10;
+        protected float m_rowIntervalDis = 10;
+        protected float m_columnIntervalDis = 10;
         protected Boolean m_bInOrder = true;
 
 
@@ -77,8 +77,8 @@ namespace FormationSetup
                 itemPrefab = null;
             }
 
-            mLineSpace = EditorGUILayout.FloatField("行间距", mLineSpace);
-            mColumnSpace = EditorGUILayout.FloatField("列间距", mColumnSpace);
+            m_rowIntervalDis = EditorGUILayout.FloatField("行间距", m_rowIntervalDis);
+            m_columnIntervalDis = EditorGUILayout.FloatField("列间距", m_columnIntervalDis);
             m_bInOrder = EditorGUILayout.Toggle("整齐队列", m_bInOrder);
         }
 

@@ -43,11 +43,11 @@ namespace FormationSetup
             for (int i = 0; i < mTrangleTotalRows; i++)
             {
                 Vector3 itemPoint = startPoint;
-                itemPoint.x -= i * mColumnSpace;
-                itemPoint.z -= lineCount / 2 * mLineSpace;
+                itemPoint.x -= i * m_columnIntervalDis;
+                itemPoint.z -= lineCount / 2 * m_rowIntervalDis;
                 if (lineCount % 2 == 0)
                 {
-                    itemPoint.z += mLineSpace / 2;
+                    itemPoint.z += m_rowIntervalDis / 2;
                 }
 
                 for (int j = 0; j < lineCount; j++)
@@ -59,14 +59,14 @@ namespace FormationSetup
                     newObject.transform.parent = mParent.rootObj.transform;
                     newObject.transform.localPosition = itemPoint;
                     newObject.name = itemPrefab.name;
-                    itemPoint.z += mLineSpace;
+                    itemPoint.z += m_rowIntervalDis;
                 }
 
                 lineCount += mTrangleAddCount;
 
             }
 
-            startPoint.x -= mTrangleTotalRows * mColumnSpace;
+            startPoint.x -= mTrangleTotalRows * m_columnIntervalDis;
 
             return true;
         }

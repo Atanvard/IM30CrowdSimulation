@@ -33,12 +33,12 @@ namespace FormationSetup
             for (int i = 0; i < mRoundRows; i++)
             {
                 Vector3 itemPoint = startPoint;
-                itemPoint.x -= i * mColumnSpace;
-                itemPoint.z -= lineCount / 2 * mLineSpace;
+                itemPoint.x -= i * m_columnIntervalDis;
+                itemPoint.z -= lineCount / 2 * m_rowIntervalDis;
                 var roundDer =  - mRoundDegrees * lineCount / 2;
                 if (lineCount % 2 == 0)
                 {
-                    itemPoint.z += mLineSpace / 2;
+                    itemPoint.z += m_rowIntervalDis / 2;
                     roundDer += mRoundDegrees / 2;
                 }
                 
@@ -56,7 +56,7 @@ namespace FormationSetup
                     itemPoint.x += roundX;
                     newObject.transform.localPosition = itemPoint;
                     itemPoint.x = baseX;
-                    itemPoint.z += mLineSpace;
+                    itemPoint.z += m_rowIntervalDis;
                     roundDer += mRoundDegrees;
                 }
 
@@ -64,7 +64,7 @@ namespace FormationSetup
 
             }
 
-            startPoint.x -= mRoundRows * mColumnSpace;
+            startPoint.x -= mRoundRows * m_columnIntervalDis;
             
             
             return true;

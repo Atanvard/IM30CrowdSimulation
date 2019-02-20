@@ -38,7 +38,7 @@ public class AControllerInspector : Editor
         }
         else if(currentTarget.controllerType == ControllerType.Attach)
         {
-            currentTarget.newSpeed = EditorGUILayout.FloatField("New velocity scale", currentTarget.newSpeed);
+            currentTarget.newSpeed = EditorGUILayout.FloatField("New speed", currentTarget.newSpeed);
             currentTarget.durationTime = EditorGUILayout.Slider("During time(sec)", currentTarget.durationTime, 0, 300);
         }
         else if(currentTarget.controllerType == ControllerType.TempleteExplose)

@@ -110,6 +110,7 @@ public class ACrowdElement : MonoBehaviour
     }
     public void DoAttachOperation(AAgentElement agentElement, bool kill, AgentState nextState, float newSpeed, float durTime, bool destroy, float delayTime)
     {
+        float oldSpeed = agentElement.agentNavSpeed;
         agentElement.ChangeStateImmediate(nextState);
         agentElement.SetNavMeshAgentActive(false);
 
@@ -119,21 +120,25 @@ public class ACrowdElement : MonoBehaviour
         DoDestroyAgent(agentElement, destroy, delayTime);
         if (!kill || !destroy)
         {
-            StartCoroutine(IRecoverOrigin(durTime, agentElement, agentElement.agentNavSpeed));
+            StartCoroutine(IRecoverOrigin(durTime, agentElement, oldSpeed));
         }
 
     }
-    IEnumerator IRecoverOrigin(float deltaTime,AAgentElement agentElement, float oldSpeed)
+    IEnumerator IRecoverOrigin(float deltaTime, AAgentElement agentElement, float oldSpeed)
     {
         yield return new WaitForSeconds(deltaTime);
-        agentElement.SetNavMeshAgentActive(true);
-        agentElement.SetNavMeshAgentSpeed(oldSpeed);
-        agentElement.ChangeStateImmediate(AgentState.Move);
+        if (agentElement.bKill == false)
+        {
+            agentElement.SetNavMeshAgentActive(true);
+            agentElement.SetNavMeshAgentSpeed(oldSpeed);
+            agentElement.ChangeStateImmediate(AgentState.Move);
+        }
     }
     public void DoKillAgent(AAgentElement agentElement, bool kill)
     {
         if (kill)
         {
+            agentElement.bKill = true;
             m_liveAgentList.Remove(agentElement);
             agentElement.SetPuppetDead();
         }

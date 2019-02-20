@@ -12,7 +12,7 @@ public class AAgentElement : MonoBehaviour {
             return m_navMeshAgent.speed;
         }
     }
-
+    public bool bKill = false;
     public AgentState currentAgentState;
     public Vector3 agentNavDestination;
     public string currentAgentAnimation {
@@ -21,7 +21,6 @@ public class AAgentElement : MonoBehaviour {
             return m_animationInstancing.GetCurrentAnimationInfo().animationName;
         }
     }
-
     private AnimationInstancing.AnimationInstancing m_animationInstancing;
     private NavMeshAgent m_navMeshAgent;
     private ACrowdElement m_crowdElement;
@@ -79,21 +78,21 @@ public class AAgentElement : MonoBehaviour {
             if (tmp.controllerType == ControllerType.Range)
             {
                 tmp.Reponse(m_crowdElement, this);
-                PerformanceOptimization();
+                //PerformanceOptimization();
             }
             else if (tmp.controllerType == ControllerType.Attach)
             {
                 tmp.Reponse(m_crowdElement,this);
-                PerformanceOptimization();
+                //PerformanceOptimization();
             }
             else if (tmp.controllerType == ControllerType.TempleteExplose)
             {
                 if (m_rigidbody == null)
                 {
                     m_rigidbody = this.gameObject.AddComponent<Rigidbody>();
-                    RemoveNavMeshAgent();
-                    DoControllerExplose(tmp);
                 }
+                RemoveNavMeshAgent();
+                DoControllerExplose(tmp);
                 tmp.Reponse(m_crowdElement,this);
                 ChangeStateImmediate(tmp.nextCrowdState);
             }
@@ -150,8 +149,9 @@ public class AAgentElement : MonoBehaviour {
     {
         if (m_crowdElement.bAnimator)
         {
-            m_animator.speed = 1;
-            m_animator.CrossFade(s, 0.1f);
+            //m_animator.speed = 1;
+            //m_animator.CrossFade(s, 0.1f);
+            m_animator.SetTrigger(s);
         }
         else
         {

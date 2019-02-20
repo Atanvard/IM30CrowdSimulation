@@ -29,23 +29,23 @@ namespace FormationSetup
             for (int i = 0; i < mRectRow; i++)
             {
                 Vector3 itemPoint = startPoint;
-                itemPoint.x -= i * mColumnSpace;
-                itemPoint.z -= mRectLineCount / 2 * mLineSpace;
+                itemPoint.x -= i * m_columnIntervalDis;
+                itemPoint.z -= mRectLineCount / 2 * m_rowIntervalDis;
                 if (mRectLineCount % 2 == 0)
                 {
-                    itemPoint.z += mLineSpace / 2;
+                    itemPoint.z += m_rowIntervalDis / 2;
                 }
 
                 for (int j = 0; j < mRectLineCount; j++)
                 {
                     var newObject = GameObject.Instantiate(itemPrefab);
                     newObject.transform.parent = mParent.rootObj.transform;
-                    newObject.transform.localPosition = itemPoint + (m_bInOrder ? Vector3.zero:new Vector3(Random.Range(-mColumnSpace, mColumnSpace), 0, Random.Range(-mLineSpace, mLineSpace)));
+                    newObject.transform.localPosition = itemPoint + (m_bInOrder ? Vector3.zero:new Vector3(Random.Range(-m_columnIntervalDis, m_columnIntervalDis), 0, Random.Range(-m_rowIntervalDis, m_rowIntervalDis)));
                     newObject.name = itemPrefab.name;
-                    itemPoint.z += mLineSpace;
+                    itemPoint.z += m_rowIntervalDis;
                 }
             }
-            startPoint.x -= mRectRow * mColumnSpace;
+            startPoint.x -= mRectRow * m_columnIntervalDis;
             return true;
         }
 
