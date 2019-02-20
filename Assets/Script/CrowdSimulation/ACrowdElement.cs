@@ -120,19 +120,29 @@ public class ACrowdElement : MonoBehaviour
         if (!kill || !destroy)
         {
             if(bSetNewSpeed)
-                StartCoroutine(IRecoverOrigin(durTime, agentElement, UnityEngine.Random.Range(minNewSpeed, maxNewSpeed)));
+                StartCoroutine(IRecoverOrigin(durTime, agentElement, minNewSpeed, maxNewSpeed));
             else
                 StartCoroutine(IRecoverOrigin(durTime, agentElement, oldSpeed));
         }
 
     }
-    IEnumerator IRecoverOrigin(float deltaTime, AAgentElement agentElement,  float oldSpeed)
+    IEnumerator IRecoverOrigin(float deltaTime, AAgentElement agentElement, float oldSpeed)
     {
         yield return new WaitForSeconds(deltaTime);
         if (agentElement.bKill == false)
         {
             agentElement.SetNavMeshAgentActive(true);
             agentElement.SetNavMeshAgentSpeed(oldSpeed);
+            agentElement.ChangeStateImmediate(AgentState.Move);
+        }
+    }
+    IEnumerator IRecoverOrigin(float deltaTime, AAgentElement agentElement, float minSpeed, float maxSpeed)
+    {
+        yield return new WaitForSeconds(deltaTime);
+        if (agentElement.bKill == false)
+        {
+            agentElement.SetNavMeshAgentActive(true);
+            agentElement.SetNavMeshAgentSpeed(UnityEngine.Random.Range(minSpeed, maxSpeed));
             agentElement.ChangeStateImmediate(AgentState.Move);
         }
     }

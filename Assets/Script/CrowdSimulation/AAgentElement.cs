@@ -157,6 +157,9 @@ public class AAgentElement : MonoBehaviour {
         {
             //m_animator.speed = 1;
             //m_animator.CrossFade(s, 0.1f);
+            foreach (AnimatorControllerParameter p in m_animator.parameters)
+            if (p.type == AnimatorControllerParameterType.Trigger)
+                    m_animator.ResetTrigger(p.name);
             m_animator.SetTrigger(s);
         }
         else

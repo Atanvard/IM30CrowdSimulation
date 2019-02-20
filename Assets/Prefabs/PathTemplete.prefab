@@ -52,13 +52,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ownPathInfoList:
-  - enable: 1
-    position:
+  - position:
     - {x: 254.81, y: 0, z: 22.921265}
     - {x: 275.70132, y: 0, z: 93.151115}
     - {x: 314.11255, y: 0, z: 157.8}
-  - enable: 0
-    position:
+  - position:
     - {x: 400, y: 0, z: 90.425415}
   affectCrowdElement:
   - {fileID: 0}
+  triggerRadius: 0
