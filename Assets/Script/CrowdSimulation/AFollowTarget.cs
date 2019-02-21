@@ -23,7 +23,7 @@ public class AFollowTarget : MonoBehaviour {
         {
             foreach(var crowd in affectCrowdElement)
             {
-                crowd.SetNewCrowdDestination(target.transform.position);
+                crowd.SetNewCrowdDestination(target.transform.position,true);
             }
             m_currentTime = 0;
         }

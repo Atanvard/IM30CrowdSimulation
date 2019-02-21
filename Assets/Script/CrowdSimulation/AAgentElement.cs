@@ -28,7 +28,7 @@ public class AAgentElement : MonoBehaviour {
     private Collider m_collider;
     private Animator m_animator;
     private PuppetMaster m_puppetMaster;
-
+    private Vector3 m_initPositionOffset;
     [DrawGizmo(GizmoType.NonSelected | GizmoType.Active)]
     void OnDrawGizmos()
     {
@@ -44,6 +44,7 @@ public class AAgentElement : MonoBehaviour {
         m_animator = this.GetComponentInChildren<Animator>();
         m_puppetMaster = this.GetComponentInChildren<PuppetMaster>();
         m_rigidbody = this.GetComponent<Rigidbody>();
+        m_initPositionOffset = this.transform.localPosition;
         Invoke("Init",0.1f);
         InvokeRepeating("MatchMoveAnimationSpeed", 0.1f, 0.3f);
     }
@@ -187,15 +188,26 @@ public class AAgentElement : MonoBehaviour {
             Destroy(m_rigidbody);
         }
     }
-    public void SetNavDestination(Vector3 tar)
+    public void SetNavDestination(Vector3 tar,bool bKeep)
     {
         if (m_navMeshAgent)
         {
-            NavMeshPath path = new NavMeshPath();
-            if (m_navMeshAgent.CalculatePath(tar, path))
-                m_navMeshAgent.SetPath(path);
-            m_navMeshAgent.destination = tar;
-            agentNavDestination = tar;
+            if (bKeep)
+            {
+                NavMeshPath path = new NavMeshPath();
+                if (m_navMeshAgent.CalculatePath(tar + m_initPositionOffset, path))
+                    m_navMeshAgent.SetPath(path);
+                m_navMeshAgent.destination = tar + m_initPositionOffset;
+                agentNavDestination = tar + m_initPositionOffset;
+            }
+            else
+            {
+                NavMeshPath path = new NavMeshPath();
+                if (m_navMeshAgent.CalculatePath(tar, path))
+                    m_navMeshAgent.SetPath(path);
+                m_navMeshAgent.destination = tar;
+                agentNavDestination = tar ;
+            }
         }
     }
     public void SetNavMeshAgentActive(bool t)

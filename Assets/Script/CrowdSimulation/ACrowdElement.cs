@@ -37,7 +37,7 @@ public class ACrowdElement : MonoBehaviour
             bAnimator = true;
         }
 	}
-    public bool SetNewCrowdDestination(Vector3[] p)
+    public bool SetNewCrowdDestination(Vector3[] p,bool bKeep)
     {
         if (p.Length == 0)
         {
@@ -84,7 +84,7 @@ public class ACrowdElement : MonoBehaviour
                 for (int i = 0; i < totalNum; i++)
                 {
                     m_liveAgentList[i].ChangeStateImmediate(AgentState.Move);
-                    m_liveAgentList[i].SetNavDestination(tmpDes[i]);
+                    m_liveAgentList[i].SetNavDestination(tmpDes[i], bKeep);
                     if (bRandomSpeed)
                         m_liveAgentList[i].SetNavMeshAgentSpeed(UnityEngine.Random.Range(minRandomSpeed, maxRandomSpeed));
                 }
@@ -94,14 +94,14 @@ public class ACrowdElement : MonoBehaviour
         return true;
     }
 
-    public bool SetNewCrowdDestination(Vector3 p)
+    public bool SetNewCrowdDestination(Vector3 p,bool kep)
     {
         int totalNum = m_liveAgentList.Count;
         for (int i = 0; i < totalNum; i++)
         {
             m_liveAgentList[i].ChangeStateImmediate(AgentState.Move);
             //m_liveAgentList[i].SetAnimationClip("Move");
-            m_liveAgentList[i].SetNavDestination(p);
+            m_liveAgentList[i].SetNavDestination(p, kep);
             if (bRandomSpeed)
                 m_liveAgentList[i].SetNavMeshAgentSpeed(UnityEngine.Random.Range(minRandomSpeed, maxRandomSpeed));
         }

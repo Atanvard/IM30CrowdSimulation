@@ -6,6 +6,7 @@ public struct PathInfo
 {
     //public bool enable;
     public Vector3[] position;
+    public bool bKeepFormation;
 }
 public class APath : MonoBehaviour {
     public List<PathInfo> ownPathInfoList;
@@ -13,6 +14,7 @@ public class APath : MonoBehaviour {
     int m_activedpathCount;
     public ACrowdElement[] affectCrowdElement;
     public float triggerRadius = 5f;
+    public int allowMaxID;
     // Use this for initialization
 
     private void OnDrawGizmos()
@@ -38,10 +40,23 @@ public class APath : MonoBehaviour {
     }
     void Start () {
         m_totalPathCount = ownPathInfoList.Count;
-        for(int j=0;j< m_totalPathCount; j++)
+        Debug.Log(m_totalPathCount);
+        for (int j=0;j< m_totalPathCount; j++)
         {
             var list = ownPathInfoList[j];
             int length = list.position.Length;
+            if(length == 1)
+            {
+                GameObject obj = new GameObject();
+                obj.AddComponent<BoxCollider>();
+                obj.GetComponent<BoxCollider>().isTrigger = true;
+                obj.AddComponent<APathTrigger>();
+                obj.GetComponent<APathTrigger>().ID = j;
+                obj.transform.parent = this.transform;
+                obj.transform.position = list.position[0];
+                obj.transform.localScale = new Vector3(triggerRadius, triggerRadius, triggerRadius);
+
+            }
             for(int i = 0; i < length - 1; i++)
             {
                 GameObject obj = new GameObject();
@@ -58,10 +73,6 @@ public class APath : MonoBehaviour {
                 {
                     obj.transform.localScale = new Vector3(triggerRadius, triggerRadius, tmpZ);
                 }
-                else
-                {
-                    obj.transform.localScale = new Vector3(triggerRadius, triggerRadius, triggerRadius);
-                }
             }
         }
         Invoke("SetFirstDestination", 1f);
@@ -70,7 +81,7 @@ public class APath : MonoBehaviour {
     void SetFirstDestination()
     {
         foreach (var crowd in affectCrowdElement)
-            crowd.SetNewCrowdDestination(ownPathInfoList[0].position);
+            crowd.SetNewCrowdDestination(ownPathInfoList[0].position,ownPathInfoList[0].bKeepFormation);
         m_activedpathCount = 0;
     }
 	public bool SetDeatination(int ID)
@@ -79,7 +90,7 @@ public class APath : MonoBehaviour {
         {
             foreach (var crowd in affectCrowdElement)
             {
-                crowd.SetNewCrowdDestination(ownPathInfoList[ID+1].position);
+                crowd.SetNewCrowdDestination(ownPathInfoList[ID+1].position,ownPathInfoList[ID+1].bKeepFormation);
             }
             if(m_activedpathCount<m_totalPathCount-2)
                 m_activedpathCount++;
