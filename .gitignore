@@ -35,5 +35,5 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
-/Assets/Resources/Artillery/maps
-/Assets/Ignore
+Assets/Resources/Artillery/maps
+Assets/Ignore
