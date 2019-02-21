@@ -43,6 +43,7 @@ public class AAgentElement : MonoBehaviour {
         m_collider = this.GetComponent<Collider>();
         m_animator = this.GetComponentInChildren<Animator>();
         m_puppetMaster = this.GetComponentInChildren<PuppetMaster>();
+        m_rigidbody = this.GetComponent<Rigidbody>();
         Invoke("Init",0.1f);
         InvokeRepeating("MatchMoveAnimationSpeed", 0.1f, 0.3f);
     }
@@ -137,8 +138,8 @@ public class AAgentElement : MonoBehaviour {
         {
             m_collider.isTrigger = false;
             m_rigidbody.isKinematic = false;
-            m_rigidbody.mass = 100;
-            m_rigidbody.AddExplosionForce(aController.exploseForce, aController.transform.position - new Vector3(0, 30f, 0), aController.exploseRadius);
+            //m_rigidbody.mass = 100;
+            m_rigidbody.AddExplosionForce(aController.exploseForce, aController.transform.position, aController.exploseRadius);
         }
         //SetPuppetPinWeight(0);
         Invoke("SetPuppetDead",1f);

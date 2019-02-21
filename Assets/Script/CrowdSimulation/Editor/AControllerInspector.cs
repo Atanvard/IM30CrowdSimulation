@@ -30,7 +30,8 @@ public class AControllerInspector : Editor
         GUILayout.Label("Detail");
         currentTarget.nextCrowdState = (AgentState)EditorGUILayout.EnumPopup("Next animation state", currentTarget.nextCrowdState);
 
-        currentTarget.bKill = EditorGUILayout.ToggleLeft("Whether kill agent", currentTarget.bKill);
+        if (currentTarget.controllerType != ControllerType.TempleteExplose)
+            currentTarget.bKill = EditorGUILayout.ToggleLeft("Whether kill agent", currentTarget.bKill);
         currentTarget.bDestroy = EditorGUILayout.ToggleLeft("Whether destroy agent", currentTarget.bDestroy);
         if (currentTarget.bDestroy)
         {
