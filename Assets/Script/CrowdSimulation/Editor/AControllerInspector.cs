@@ -73,6 +73,7 @@ public class AControllerInspector : Editor
         else if(currentTarget.controllerType == ControllerType.TempleteColider)
         {
         }
+        //EditorGUILayout.LabelField("========================================================");
         //base.DrawDefaultInspector();
     }
 }

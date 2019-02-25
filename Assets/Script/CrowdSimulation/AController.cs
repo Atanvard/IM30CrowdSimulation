@@ -77,7 +77,7 @@ public class AController : MonoBehaviour {
         ChangeGizmoColor(Color.black);
         if (controllerType == ControllerType.Range) { 
             crowdElement.DoRangeOperation(agentElement, affectPercent / 100, delayTime, durationTime, nextCrowdState, bSetNewSpeed, newMinSpeed, newMaxSpeed, bKill, bDestroy, destroyDelayTime);
-            DisableController();
+            //DisableController();
         }else if(controllerType == ControllerType.Attach)
         {
             crowdElement.DoAttachOperation(agentElement, bKill, nextCrowdState, bSetNewSpeed, newMinSpeed, newMaxSpeed, durationTime, bDestroy, destroyDelayTime);

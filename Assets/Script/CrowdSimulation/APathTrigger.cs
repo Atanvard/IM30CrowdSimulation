@@ -5,15 +5,18 @@ using UnityEngine;
 public class APathTrigger : MonoBehaviour {
     public int ID;
     private APath m_ownPath;
+    private int m_bStay = 0;
     void OnTriggerStay(Collider other)
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("physicalAgent"))
         {
-            if (ID < m_ownPath.allowMaxID)
+                ++m_bStay;
+            if (ID < m_ownPath.allowMaxID&& m_bStay>0)
             {
                 if (m_ownPath.SetDeatination(ID))
                 {
                     Destroy(this.gameObject);
+                    Debug.Log("kill");
                 }
             }
         }

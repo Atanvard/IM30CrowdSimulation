@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEditor;
 using RootMotion.Dynamics;
-public enum AgentState { Idle, Move, Attack, Dead };
+public enum AgentState { Idle, Move, Attack, Dead , CheerUp};
 public class AAgentElement : MonoBehaviour {
     public float agentNavSpeed {
         get
@@ -45,10 +45,18 @@ public class AAgentElement : MonoBehaviour {
         m_puppetMaster = this.GetComponentInChildren<PuppetMaster>();
         m_rigidbody = this.GetComponent<Rigidbody>();
         m_initPositionOffset = this.transform.localPosition;
-        Invoke("Init",0.1f);
-        InvokeRepeating("MatchMoveAnimationSpeed", 0.1f, 0.3f);
+        Invoke("Init",0.03f);
+        InvokeRepeating("Idle", 5f, 0.1f);
     }
-
+    void Update()
+    {
+        //MatchMoveAnimationSpeed();
+    }
+    void Idle()
+    {
+        if(m_navMeshAgent.velocity.magnitude == 0)
+        SetAnimationClip("Idle");
+    }
 	void Init()
     {
         //TODO : Using configuration file
@@ -126,12 +134,31 @@ public class AAgentElement : MonoBehaviour {
             if (m_crowdElement.bAnimator)
             {
                 m_animator.speed = m_navMeshAgent.velocity.magnitude * m_crowdElement.animationScale;
-            }
-            else
-            {
-                m_animationInstancing.playSpeed = m_navMeshAgent.velocity.magnitude * m_crowdElement.animationScale;
+                //if (m_navMeshAgent.velocity.magnitude == 0)
+                //{
+                //    SetAnimationClip("Idle");
+                //}
+                //else
+                //{
+                //    SetAnimationClip("Move");
+                //    //Debug.Log(m_animator.GetCurrentAnimatorStateInfo(0).IsName("Move"));
+                //}
             }
         }
+            else
+            {
+            Debug.Log(m_navMeshAgent.velocity.magnitude);
+                m_animationInstancing.playSpeed = m_navMeshAgent.velocity.magnitude * m_crowdElement.animationScale;
+                if (m_navMeshAgent.velocity.magnitude == 0)
+                {
+                    SetAnimationClip("Idle");
+                }
+                else
+                {
+                        SetAnimationClip("Move");
+                }
+            }
+        
     }
     void DoControllerExplose(AController aController)
     {
@@ -157,12 +184,13 @@ public class AAgentElement : MonoBehaviour {
     {
         if (m_crowdElement.bAnimator)
         {
-            //m_animator.speed = 1;
-            //m_animator.CrossFade(s, 0.1f);
-            foreach (AnimatorControllerParameter p in m_animator.parameters)
-            if (p.type == AnimatorControllerParameterType.Trigger)
-                    m_animator.ResetTrigger(p.name);
-            m_animator.SetTrigger(s);
+            m_animator.speed = 1;
+            m_animator.CrossFade(s, 0.1f);
+            //foreach (AnimatorControllerParameter p in m_animator.parameters)
+            //if (p.type == AnimatorControllerParameterType.Trigger)
+            //        m_animator.ResetTrigger(p.name);
+            //m_animator.speed = 1f;
+            //m_animator.SetTrigger(s);
         }
         else
         {
@@ -254,6 +282,10 @@ public class AAgentElement : MonoBehaviour {
             case AgentState.Attack:
                 SetAnimationClip("Attack");
                 currentAgentState = AgentState.Attack;
+                break;
+            case AgentState.CheerUp:
+                SetAnimationClip("CheerUp");
+                currentAgentState = AgentState.CheerUp;
                 break;
             default:
                 break;

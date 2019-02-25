@@ -5,6 +5,8 @@ using UnityEditor;
 using RootMotion.Dynamics;
 
 [CustomEditor(typeof(ACrowdElement))]
+[CanEditMultipleObjects]
+
 public class ACrowdElementInspector : Editor {
     public override void OnInspectorGUI()
     {
@@ -15,7 +17,7 @@ public class ACrowdElementInspector : Editor {
 
         GUI.skin.label.fontSize = 12;
         EditorGUILayout.LabelField("Own agent number", currentTarget.ownAgentNum.ToString());
-        if (!currentTarget.GetComponentInChildren<PuppetMaster>())
+        if (!currentTarget.GetComponentInChildren<Animator>())
         {
             EditorGUILayout.LabelField("High Quantity Agent");
         }

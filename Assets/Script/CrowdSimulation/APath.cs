@@ -15,6 +15,9 @@ public class APath : MonoBehaviour {
     public ACrowdElement[] affectCrowdElement;
     public float triggerRadius = 5f;
     public int allowMaxID;
+    public bool setLineNumber;
+    public int rowNumber;
+    public int lineNumber;
     // Use this for initialization
 
     private void OnDrawGizmos()
@@ -40,42 +43,42 @@ public class APath : MonoBehaviour {
     }
     void Start () {
         m_totalPathCount = ownPathInfoList.Count;
-        Debug.Log(m_totalPathCount);
-        for (int j=0;j< m_totalPathCount; j++)
-        {
-            var list = ownPathInfoList[j];
-            int length = list.position.Length;
-            if(length == 1)
-            {
-                GameObject obj = new GameObject();
-                obj.AddComponent<BoxCollider>();
-                obj.GetComponent<BoxCollider>().isTrigger = true;
-                obj.AddComponent<APathTrigger>();
-                obj.GetComponent<APathTrigger>().ID = j;
-                obj.transform.parent = this.transform;
-                obj.transform.position = list.position[0];
-                obj.transform.localScale = new Vector3(triggerRadius, triggerRadius, triggerRadius);
+        //for (int j=0;j< m_totalPathCount; j++)
+        //{
+        //    var list = ownPathInfoList[j];
+        //    int length = list.position.Length;
+        //    if(length == 1)
+        //    {
+        //        GameObject obj = new GameObject();
+        //        obj.AddComponent<BoxCollider>();
+        //        obj.GetComponent<BoxCollider>().isTrigger = true;
+        //        obj.AddComponent<APathTrigger>();
+        //        obj.GetComponent<APathTrigger>().ID = j;
+        //        obj.transform.parent = this.transform;
+        //        obj.transform.position = list.position[0];
+        //        obj.transform.localScale = new Vector3(triggerRadius, triggerRadius, triggerRadius);
 
-            }
-            for(int i = 0; i < length - 1; i++)
-            {
-                GameObject obj = new GameObject();
-                obj.AddComponent<BoxCollider>();
-                obj.GetComponent<BoxCollider>().isTrigger = true;
-                obj.AddComponent<APathTrigger>();
-                obj.GetComponent<APathTrigger>().ID = j;
+        //    }
+        //    for(int i = 0; i < length - 1; i++)
+        //    {
+        //        GameObject obj = new GameObject();
+        //        obj.AddComponent<BoxCollider>();
+        //        obj.GetComponent<BoxCollider>().isTrigger = true;
+        //        obj.AddComponent<APathTrigger>();
+        //        obj.GetComponent<APathTrigger>().ID = j;
 
-                obj.transform.parent = this.transform;
-                obj.transform.position = Vector3.Lerp(list.position[i], list.position[i+1], 0.5f);
-                obj.transform.LookAt(list.position[i]);
-                float tmpZ = Vector3.Distance(list.position[i], list.position[i + 1]);
-                if (tmpZ != 0)
-                {
-                    obj.transform.localScale = new Vector3(triggerRadius, triggerRadius, tmpZ);
-                }
-            }
-        }
+        //        obj.transform.parent = this.transform;
+        //        obj.transform.position = Vector3.Lerp(list.position[i], list.position[i+1], 0.5f);
+        //        obj.transform.LookAt(list.position[i]);
+        //        float tmpZ = Vector3.Distance(list.position[i], list.position[i + 1]);
+        //        if (tmpZ != 0)
+        //        {
+        //            obj.transform.localScale = new Vector3(triggerRadius, triggerRadius, tmpZ);
+        //        }
+        //    }
+        //}
         Invoke("SetFirstDestination", 1f);
+        m_activedpathCount = 0;
 
     }
     void SetFirstDestination()
@@ -90,27 +93,30 @@ public class APath : MonoBehaviour {
         {
             foreach (var crowd in affectCrowdElement)
             {
-                crowd.SetNewCrowdDestination(ownPathInfoList[ID+1].position,ownPathInfoList[ID+1].bKeepFormation);
+                if (setLineNumber)
+                {
+                    crowd.SetNewCrowdDestination(ownPathInfoList[ID + 1].position, setLineNumber, rowNumber, lineNumber);
+                }
+                else
+                {
+                    crowd.SetNewCrowdDestination(ownPathInfoList[ID + 1].position, setLineNumber, rowNumber, lineNumber);
+                }
+                //crowd.SetNewCrowdDestination(ownPathInfoList[ID+1].position,ownPathInfoList[ID+1].bKeepFormation);
             }
-            if(m_activedpathCount<m_totalPathCount-2)
-                m_activedpathCount++;
+            //if(m_activedpathCount<m_totalPathCount-2)
+            //    m_activedpathCount++;
             return true;
         }
         else
             return false;
     }
 	// Update is called once per frame
-	void Update () {
-		//if(m_activedpathCount < m_totalPathCount)
-  //      {
-  //          if (ownPathInfoList[m_activedpathCount].enable)
-  //          {
-  //              foreach(var crowd in affectCrowdElement)
-  //              {
-  //                  crowd.SetNewCrowdDestination(ownPathInfoList[m_activedpathCount].position);
-  //              }
-  //              ++m_activedpathCount;
-  //          }
-  //      }
-	}
+	void Update ()
+    {
+        if (m_activedpathCount < allowMaxID && allowMaxID<m_totalPathCount)
+        {
+            SetDeatination(m_activedpathCount);
+            ++m_activedpathCount;
+        }
+    }
 }

@@ -27,12 +27,11 @@ public class ACrowdElement : MonoBehaviour
     public float maxRandomSpeed;
     public float animationScale = 0.1f;
     public bool bRandomAnimationStartFrame = true;
-
     void Start () {
         m_ownAgents = GetComponentsInChildren<AAgentElement>();
         m_currentTargetPositionList = new List<Vector3>();
         m_liveAgentList = new List<AAgentElement>(m_ownAgents);
-        if (GetComponentInChildren<PuppetMaster>())
+        if (GetComponentInChildren<Animator>())
         {
             bAnimator = true;
         }
@@ -57,43 +56,264 @@ public class ACrowdElement : MonoBehaviour
 
         Vector3[] tmpDes = new Vector3[m_liveAgentList.Count];
         bool bLock = false;
-        Loom.RunAsync(() =>
+        int[] perDesLineNum;
+        perDesLineNum = new int[totalNum];
+        float totalDesLineDis=0;
+        if (destinationPointCount > 0)
         {
+                for (int n = 0; n < destinationPointCount - 1; ++n)
+                {
+                    totalDesLineDis += (int)Vector3.Distance(m_currentTargetPositionList[n], m_currentTargetPositionList[n + 1]);
+                }
+                for (int n = 0; n < destinationPointCount - 1; ++n)
+                {
+                    perDesLineNum[n] = (int)((int)Vector3.Distance(m_currentTargetPositionList[n], m_currentTargetPositionList[n + 1]) / totalDesLineDis * totalNum);
+                }
+        }
+        
+            int currentLine = 0;
+            int j = 0;
             for (int i = 0; i < totalNum; i++)
             {
-                float tmp = (float)i / (float)totalNum * (destinationPointCount - 1);
-                int t = (int)tmp;
-                if (destinationPointCount > 1)
+                if (destinationPointCount > 1&& currentLine< destinationPointCount-1)
                 {
-                    tmpDes[i] = Vector3.Lerp(m_currentTargetPositionList[t], m_currentTargetPositionList[t + 1], tmp - t);
+                    float tmp = (float)j < perDesLineNum[currentLine] ? (float)j / perDesLineNum[currentLine] : 1;
+                    tmpDes[i] = Vector3.Lerp(m_currentTargetPositionList[currentLine], m_currentTargetPositionList[currentLine + 1], tmp);
+                //Debug.Log(j+".."+currentLine+"i:"+i);
+                    ++j;
+                    if (j > perDesLineNum[currentLine] - 1)
+                    {
+                        j = 0;
+                        currentLine += 1;
+                    }
                 }
+                //else
+                //{
+                //    tmpDes[i] = m_currentTargetPositionList[0];
+                //}
+                //float tmp = (float)i / (float)totalNum * (destinationPointCount - 1);
+                //int t = (int)tmp;
+                //if (destinationPointCount > 1)
+                //{
+                //    tmpDes[i] = Vector3.Lerp(m_currentTargetPositionList[t], m_currentTargetPositionList[t + 1], tmp - t);
+                //}
                 else
                 {
                     tmpDes[i] = m_currentTargetPositionList[0];
                 }
+
             }
-            bLock = true;
-        }
-        );
-            Loom.QueueOnMainThread(() =>
+            for (int i = 0; i < totalNum; i++)
             {
-                while (!bLock)
-                {
-                    Debug.Log("waiting subThread");
-                }
-                for (int i = 0; i < totalNum; i++)
-                {
-                    m_liveAgentList[i].ChangeStateImmediate(AgentState.Move);
-                    m_liveAgentList[i].SetNavDestination(tmpDes[i], bKeep);
-                    if (bRandomSpeed)
-                        m_liveAgentList[i].SetNavMeshAgentSpeed(UnityEngine.Random.Range(minRandomSpeed, maxRandomSpeed));
-                }
+                m_liveAgentList[i].ChangeStateImmediate(AgentState.Move);
+                m_liveAgentList[i].SetNavDestination(tmpDes[i], bKeep);
+                if (bRandomSpeed)
+                    m_liveAgentList[i].SetNavMeshAgentSpeed(UnityEngine.Random.Range(minRandomSpeed, maxRandomSpeed));
             }
-            );
+        //Loom.RunAsync(() =>
+        //{
+        //    int currentLine = 0;
+        //    int j = 0;
+        //    for (int i = 0; i < totalNum; i++)
+        //    {
+        //        if (destinationPointCount > 1)
+        //        {
+        //            float tmp = (float)j < perDesLineNum[currentLine] ? (float)j / perDesLineNum[currentLine] : 1;
+        //            tmpDes[i] = Vector3.Lerp(m_currentTargetPositionList[currentLine], m_currentTargetPositionList[currentLine + 1],tmp );
+
+        //            ++j;
+        //            if (j > perDesLineNum[currentLine] - 2)
+        //            {
+        //                j = 0;
+        //                currentLine += 1;
+        //            }
+        //        }
+        //        //else
+        //        //{
+        //        //    tmpDes[i] = m_currentTargetPositionList[0];
+        //        //}
+        //        //float tmp = (float)i / (float)totalNum * (destinationPointCount - 1);
+        //        //int t = (int)tmp;
+        //        //if (destinationPointCount > 1)
+        //        //{
+        //        //    tmpDes[i] = Vector3.Lerp(m_currentTargetPositionList[t], m_currentTargetPositionList[t + 1], tmp - t);
+        //        //}
+        //        else
+        //        {
+        //            tmpDes[i] = m_currentTargetPositionList[0];
+        //        }
+
+        //    }
+        //    bLock = true;
+        //}
+        //);
+        //Loom.QueueOnMainThread(() =>
+        //{
+        //        while (!bLock)
+        //        {
+        //            Debug.Log("waiting subThread");
+        //        }
+        //        for (int i = 0; i < totalNum; i++)
+        //        {
+        //            m_liveAgentList[i].ChangeStateImmediate(AgentState.Move);
+        //            m_liveAgentList[i].SetNavDestination(tmpDes[i], bKeep);
+        //            if (bRandomSpeed)
+        //                m_liveAgentList[i].SetNavMeshAgentSpeed(UnityEngine.Random.Range(minRandomSpeed, maxRandomSpeed));
+        //        }
+        //}
+        //);
 
         return true;
     }
 
+    public bool SetNewCrowdDestination(Vector3[] p, bool setLineNumber, int rowNumber, int lineNumber)
+    {
+        if (p.Length == 0)
+        {
+            Debug.Log("current path's position is null");
+            return false;
+        }
+        m_currentTargetPositionList = new List<Vector3>(p);
+
+        if (m_ownAgents.Length == 0)
+        {
+            Debug.Log("this crowd:" + this.name + " doesn't own agent");
+            return false;
+        }
+
+        int destinationPointCount = m_currentTargetPositionList.Count;
+        int totalNum = m_liveAgentList.Count;
+
+        Vector3[] tmpDes = new Vector3[m_liveAgentList.Count];
+        bool bLock = false;
+        int[] perDesLineNum;
+        perDesLineNum = new int[totalNum];
+        float totalDesLineDis = 0;
+
+        if (destinationPointCount > 0)
+        {
+            if (!setLineNumber)
+            {
+                for (int n = 0; n < destinationPointCount - 1; ++n)
+                {
+                    totalDesLineDis += (int)Vector3.Distance(m_currentTargetPositionList[n], m_currentTargetPositionList[n + 1]);
+                }
+                for (int n = 0; n < destinationPointCount - 1; ++n)
+                {
+
+                    perDesLineNum[n] = (int)((int)Vector3.Distance(m_currentTargetPositionList[n], m_currentTargetPositionList[n + 1]) / totalDesLineDis * totalNum);
+                    if (perDesLineNum[n] == 0)
+                    {
+                        perDesLineNum[n] = 1;
+                    }
+                }
+            }
+            else
+            {
+                perDesLineNum[1] = perDesLineNum[3] = rowNumber;
+                perDesLineNum[0] = perDesLineNum[2] = lineNumber;
+            }
+        }
+
+        int currentLine = 0;
+        int j = 0;
+        for (int i = 0; i < totalNum; i++)
+        {
+            //Debug.Log("j:" + j+" i:"+i);
+            if (destinationPointCount > 1 && currentLine < destinationPointCount - 1)
+            {
+                if (perDesLineNum[currentLine] == 0)
+                {
+                    currentLine += 1;
+                }
+                    float tmp = (float)j <= perDesLineNum[currentLine] ? (float)j / perDesLineNum[currentLine] : 1;
+                    tmpDes[i] = Vector3.Lerp(m_currentTargetPositionList[currentLine], m_currentTargetPositionList[currentLine + 1], tmp);
+                //Debug.Log((float)j / perDesLineNum[currentLine]+" position:"+tmpDes[i]);
+                ++j;
+                    if (j > perDesLineNum[currentLine]-1 )
+                    {
+                        j = 0;
+                        currentLine += 1;
+                    }
+            }
+            //else
+            //{
+            //    tmpDes[i] = m_currentTargetPositionList[0];
+            //}
+            //float tmp = (float)i / (float)totalNum * (destinationPointCount - 1);
+            //int t = (int)tmp;
+            //if (destinationPointCount > 1)
+            //{
+            //    tmpDes[i] = Vector3.Lerp(m_currentTargetPositionList[t], m_currentTargetPositionList[t + 1], tmp - t);
+            //}
+            else
+            {
+                tmpDes[i] = m_currentTargetPositionList[0];
+            }
+
+        }
+        for (int i = 0; i < totalNum; i++)
+        {
+            m_liveAgentList[i].ChangeStateImmediate(AgentState.Move);
+            m_liveAgentList[i].SetNavDestination(tmpDes[i], false);
+            if (bRandomSpeed)
+                m_liveAgentList[i].SetNavMeshAgentSpeed(UnityEngine.Random.Range(minRandomSpeed, maxRandomSpeed));
+        }
+        //Loom.RunAsync(() =>
+        //{
+        //    int currentLine = 0;
+        //    int j = 0;
+        //    for (int i = 0; i < totalNum; i++)
+        //    {
+        //        if (destinationPointCount > 1)
+        //        {
+        //            float tmp = (float)j < perDesLineNum[currentLine] ? (float)j / perDesLineNum[currentLine] : 1;
+        //            tmpDes[i] = Vector3.Lerp(m_currentTargetPositionList[currentLine], m_currentTargetPositionList[currentLine + 1],tmp );
+
+        //            ++j;
+        //            if (j > perDesLineNum[currentLine] - 2)
+        //            {
+        //                j = 0;
+        //                currentLine += 1;
+        //            }
+        //        }
+        //        //else
+        //        //{
+        //        //    tmpDes[i] = m_currentTargetPositionList[0];
+        //        //}
+        //        //float tmp = (float)i / (float)totalNum * (destinationPointCount - 1);
+        //        //int t = (int)tmp;
+        //        //if (destinationPointCount > 1)
+        //        //{
+        //        //    tmpDes[i] = Vector3.Lerp(m_currentTargetPositionList[t], m_currentTargetPositionList[t + 1], tmp - t);
+        //        //}
+        //        else
+        //        {
+        //            tmpDes[i] = m_currentTargetPositionList[0];
+        //        }
+
+        //    }
+        //    bLock = true;
+        //}
+        //);
+        //Loom.QueueOnMainThread(() =>
+        //{
+        //        while (!bLock)
+        //        {
+        //            Debug.Log("waiting subThread");
+        //        }
+        //        for (int i = 0; i < totalNum; i++)
+        //        {
+        //            m_liveAgentList[i].ChangeStateImmediate(AgentState.Move);
+        //            m_liveAgentList[i].SetNavDestination(tmpDes[i], bKeep);
+        //            if (bRandomSpeed)
+        //                m_liveAgentList[i].SetNavMeshAgentSpeed(UnityEngine.Random.Range(minRandomSpeed, maxRandomSpeed));
+        //        }
+        //}
+        //);
+
+        return true;
+    }
     public bool SetNewCrowdDestination(Vector3 p,bool kep)
     {
         int totalNum = m_liveAgentList.Count;
